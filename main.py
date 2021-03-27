@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import subprocess
 from sys import exit
-from platform import system
+import platform
 from zipfile import ZipFile
 from os import walk,path,getcwd,system
 from time import sleep
@@ -34,13 +34,14 @@ except:
     exit()
 
 def ngrok():
-    
-    check_ngrok = subprocess.check_output('ps aux | grep -o "ngrok" | head -n1',shell=True)
-    if 'ngrok' in check_ngrok.decode('utf8').lower():
+    try:
+        subprocess.check_output('./ngrok',shell=True)
         return
-    else:
-        print(colored('[*] ngrok does not exist on your system. Preparing to download','red',attrs=['bold']))
-        if system() == 'Darwin':
+    except:
+        pass
+    if (1):
+        print(colored('[*] Preparing to download ngrok','red',attrs=['bold']))
+        if platform.system() == 'Darwin':
             r = requests.get('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-darwin-amd64.zip',allow_redirects=True).content
             open('ngrok-zip.zip','wb').write(r)
         else:
@@ -49,7 +50,10 @@ def ngrok():
         with ZipFile('ngrok-zip.zip', 'r') as zip:
             zip.extractall()
     subprocess.Popen(['chmod','+x', 'ngrok'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
+    tkn = input(colored('[*] Please creat an account on https://ngrok.com and enter your authtoken : ','green',attrs=['bold']))
+    subprocess.Popen(['./ngrok','authtoken', tkn],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
     subprocess.Popen(['rm','-rf', 'ngrok-zip.zip'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
+    
             
 get_link = lambda : "https:"+requests.get('http://127.0.0.1:4040/api/tunnels/command_line').content.decode('utf8').split(',')[2].split(':')[2].strip('"')
 start_ngrok = lambda : subprocess.Popen(['./ngrok','http', '3030'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)    
@@ -156,6 +160,7 @@ def ip_details(ip):
         print(a,b,sep='\t')
 
 def main():    
+    ngrok()
     s1 = colored('''
 
 [*]  DISCLAIMER : DEVELOPERS ASSUME NO LIABILITY AND ARE NOT RESPONSIBLE FOR ANY MISUSE  [*]
