@@ -1,4 +1,4 @@
-# PHISHERMAN
+# PHISHERMAN v1.0
 Phishing tool for Google, Facebook, Instagram, Messenger and much more with recent versions of their respective login pages
 
 # LEGAL DISCLAIMER
