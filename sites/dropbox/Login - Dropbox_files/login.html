@@ -1,0 +1,650 @@
+
+<!-- saved from url=(0014)about:internet -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <!--[if (gte IE 9) ]>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <![endif]-->
+    <title>Dropbox</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src https: &#39;unsafe-inline&#39; &#39;unsafe-eval&#39;; ">
+    <script type="text/javascript" src="./optout_check"></script><script type="text/javascript" src="./get"></script><script type="text/javascript" src="./optout_check"></script><script type="text/javascript" src="./7fe1f424-c09d-4781-af13-2352d2ee4229"></script><script type="text/javascript" async="" src="./analytics.js"></script><script async="" src="./controltag.js.0631b7d64dbbd3656a8b7368ad227a04"></script><script async="" src="./events.js"></script><script type="text/javascript" async="" charset="utf-8" id="utag_285" src="./up_loader.1.1.0.js"></script><script type="text/javascript" async="" charset="utf-8" id="utag_281" src="./insight.min.js"></script><script type="text/javascript" async="" charset="utf-8" id="utag_253" src="./up_loader.1.1.0.js"></script><script src="./tpxf4nq03.js" class="kxct" data-id="tpxf4nq03" data-timing="async" data-version="3.0" type="text/javascript" async=""></script><script async="" src="./uwt.js"></script><script type="text/javascript" async="" charset="utf-8" id="utag_18" src="./insight.min.js"></script><script type="text/javascript" async="" charset="utf-8" id="utag_30" src="./js"></script><script type="text/javascript" async="" charset="utf-8" id="tiqapp" src="./utag.v.js"></script><link id="sa-css" rel="stylesheet" type="text/css" href="./sa.css" media="all"></head>
+<body>
+<script src="./utag.js" type="text/javascript" async=""></script><script>
+    (function(){
+        // Enable debugging via localStorage.
+        var debug_enabled = false;
+        if (window.localStorage && window.localStorage.getItem('marketing_tracker_debug')) {
+            debug_enabled = true;
+        }
+
+        /**
+         * Grab referrer from query params and attempt to set on document. If we have a correct
+         * referrer reference then setup the trackers, otherwise, we need to reload.
+         */
+        var ref_match = RegExp('[?&]referrer=([^&]*)').exec(window.location.search);
+        var fakeref = ref_match ? decodeURIComponent(ref_match[1]) : "";
+        try {
+            if ('Object' in window && 'defineProperty' in Object){
+                Object.defineProperty(document,'referrer',{'get':function(){ return fakeref;}});
+            } else {
+                window.document.__defineGetter__('referrer', function () { return fakeref;});
+            }
+        } catch(e){}
+
+        // If we couldn't override the referrer, then replace the location and reload.
+        if (document.referrer !== fakeref && document.referrer !== "") {
+            location.replace(location.href);
+        } else {
+            setupTrackers();
+        }
+
+        /**
+         * Listens for postMessages and sets up the trackers.
+         */
+        function setupTrackers () {
+            // GTM dataLayer and status.
+            window.dataLayer = [];
+
+            // Tealium event queue and interval.
+            window.tealiumQueue = [];
+            window.tealiumLoading = false;
+
+            // Debug log our build 'version'.
+            debug('Version', '2020-12-11 19:23:38.007641');
+
+            // Listen for messages from marketing_tracker.ts.
+            window.addEventListener('message', function(event){
+                debug('postMessage received', event);
+
+                var isTrustedOrigin = (
+                    event.origin === "https://www.dropbox.com" ||
+                    event.origin === "https://paper.dropbox.com"
+                );
+
+                if (isTrustedOrigin) {
+                    var dataLayer = event.data || {};
+                    var config = {};
+                    var eventType = 'link';
+
+                    // If config was passed through, strip it from the dataLayer.
+                    if (dataLayer._config) {
+                        config = dataLayer._config;
+                        delete dataLayer._config;
+                    }
+                    if (dataLayer._eventType) {
+                        eventType = dataLayer._eventType;
+                        delete dataLayer._eventType;
+                    }
+
+                    // Debug log the dataLayer and config.
+                    debug('Config', config);
+                    debug('dataLayer', dataLayer);
+                    debug('eventType', eventType);
+
+                    handleTealium(dataLayer, config, eventType);
+                } else {
+                    debug('Untrusted origin, no trackers activated');
+                }
+            });
+        }
+
+        /**
+         * Load Tealium and push data to it. Since Tealium doesn't queue data the same way that
+         * GTM does, we need to setup our own queue and process it after Tealium's API
+         * has finished loading.
+         */
+        function handleTealium (dataLayer, config, eventType) {
+            var tealium_enabled = config.tealium_enabled !== undefined ? config.tealium_enabled : false;
+
+            // If Tealium is not enabled, bail out.
+            if (!tealium_enabled) {
+                return;
+            }
+
+            debug('Tealium - process event or queue if is not loaded');
+            processTealiumEvent(dataLayer, config, eventType);
+        }
+
+        /**
+         * Process Tealium event according to the current loading state:
+         *
+         *   - If not yet loaded, set dataLayer and load the Tealium script .
+         *   - If still loading, queue the event.
+         *   - If done loading, trigger the event with utag.link().
+         */
+        function processTealiumEvent (dataLayer, config, eventType) {
+            var tealium_profile = config.tealium_profile || 'main';
+            var tealium_env = config.tealium_env || 'prod';
+
+            // If Tealium has already loaded, fire off a utag.link() event instead of setting up
+            // the initial pageview data.
+            if (window.utag) {
+                if (eventType === 'link') {
+                    debug('Tealium - utag.link()');
+                    window.utag.link(dataLayer);
+                } else if (eventType === 'view') {
+                    debug('Tealium - utag.view()');
+                    window.utag.view(dataLayer);
+                } else {
+                    // TODO: throw exception by posting message
+                    debug('Tealium - unknown type of event ${eventType}!');
+                }
+                return;
+            }
+
+            // If we're already in the process of loading Tealium, add this event to the queue.
+            if (window.tealiumLoading) {
+                debug('Tealium - adding data to queue');
+                window.tealiumQueue.push(dataLayer);
+                return;
+            }
+
+            // Setup the Tealium data layer and start loading it.
+            debug('Tealium - setting utag_data and loading script');
+            window.tealiumLoading = true;
+            window.utag_data = dataLayer;
+            (function(a,b,c,d){
+                a='//tags.tiqcdn.com/utag/dropbox/'+ tealium_profile + '/' + tealium_env + '/utag.js';
+                b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+                a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+            })();
+
+            // Wait until Tealium is loaded, then drain the queue.
+            debug('Tealium - waiting for window.utag');
+            onPropertySet(window, 'utag', function () {
+                debug('Tealium - found window.utag');
+                window.tealiumLoading = false;
+                window.tealiumQueue.forEach(function (item) {
+                    debug('Tealium - utag.link() for queued item', item);
+                    window.utag.link(item);
+                });
+                window.tealiumQueue = [];
+            });
+        }
+
+        /**
+         * Helper to wait until an object property is set for the first time.
+         */
+        function onPropertySet(obj, prop, cb) {
+            Object.defineProperty(obj, prop, {
+                configurable: true,
+                enumerable: true,
+                writeable: true,
+                get: function () {
+                    return undefined;
+                },
+                set: function (val) {
+                    Object.defineProperty(obj, prop, {
+                        value: val,
+                        enumerable: true,
+                        writeable: true
+                    });
+                    cb();
+                }
+            });
+        }
+
+        /**
+         * Helper to do 'debug' logging (only visible if you are showing 'verbose' console logs).
+         */
+        function debug (msg, data) {
+            if (console.debug && debug_enabled) {
+                if (data) {
+                    console.debug('Marketing Tracker: ' + msg, data);
+                } else {
+                    console.debug('Marketing Tracker: ' + msg);
+                }
+            }
+        }
+    })();
+</script>
+
+
+<div id="ttdUniversalPixelTag" style="display: none;"></div><iframe id="utag_413_iframe" height="1" width="1" style="display:none" src="./activityi.html"></iframe><iframe id="universal_pixel_vwygxao" height="0" width="0" style="display:none;" src="./up.html" title="TTD Universal Pixel"></iframe><iframe id="universal_pixel_o9lxggc" height="0" width="0" style="display:none;" src="./up(1).html" title="TTD Universal Pixel"></iframe><script src="./adsct" type="text/javascript"></script><script src="./adsct(1)" type="text/javascript"></script><div class="kxhead" data-id="tpxf4nq03" style="display:none !important;"><span class="kxtag kxinvisible" data-id="39100"><script>
+(function(){
+	Krux('scrape',{'page_attr_url_path_1':{'url_path':'1'}});
+	Krux('scrape',{'page_attr_url_path_2':{'url_path':'2'}});
+	Krux('scrape',{'page_attr_url_path_3':{'url_path':'3'}});
+	Krux('scrape',{'page_attr_meta_keywords':{meta_name:'keywords'}});
+
+	Krux('scrape',{'page_attr_domain':{url_domain: '3'}});
+
+})();
+</script></span><span class="kxtag kxinvisible" data-id="39154"><script>
+(function(){
+
+	var params = Krux('require:util').urlParams();
+	
+	Krux ('set', { 
+	'page_attr_utm_source': params.utm_source,
+	'page_attr_utm_medium': params.utm_medium,
+	'page_attr_utm_campaign': params.utm_campaign,
+	'page_attr_utm_content': params.utm_content,
+	'page_attr_utm_term': params.utm_term 
+	});
+	
+})();
+</script></span><span class="kxtag kxinvisible" data-id="39182"><script>
+(function() {
+    var clickURL = Krux('get', 'url_click'),
+        _ = Krux('require:underscore'),
+        libUtil = Krux('require:util.library-tag'),
+        pixelParam, store, sent,
+        confid, campaignid, siteid;
+
+    // Function to retrieve capping info from sessionStorage
+    function get(key) {
+        try {
+            return JSON.parse(sessionStorage.getItem(key) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    // Function to add capping info to sessionStorage
+    function set(key, value) {
+        try {
+            sessionStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {}
+    }
+
+    // Function to check if tag is valid by comparing aginst capping info
+    function configValidate(config) {
+        var allowedSource = libUtil.removeFalsyStrings('fb,instagram,linkedin'.toLowerCase()),
+            i = 0;
+        for (; i < store.length; i++) {
+            if (_.isEqual(store[i], config)) return false;
+        }
+        // Cater for client not using allowedSource
+        if (!allowedSource.length) allowedSource.push(config.kxsiteid.toLowerCase());
+        // Invalid if source is not in the allowed list
+        if (_.indexOf(allowedSource, config.kxsiteid.toLowerCase()) < 0) return false;
+        return true;
+    }
+
+    // Function to collect and normalize values
+    function getParameter(method, path) {
+        var value;
+
+        if (!(method && path)) return;
+
+        switch (method) {
+            case 'none':
+                break;
+            case 'text':
+                value = path;
+                break;
+            case 'get':
+                value = Krux('get', path);
+                break;
+            default:
+                value = Krux('scrape.' + method, path);
+        }
+
+        if (value && !_.isArray(value)) return value
+            .replace(/[^a-zA-Z0-9_-]+/g, '_')
+            .replace(/_+/g, '_')
+            .replace(/^_/, '')
+            .replace(/_$/, '');
+        // Use null if no result as it is included in JSON.stringify
+        return null;
+    }
+
+    // Scrape Media Attributes
+    confid = getParameter('text', 'tqs6ypmw7');
+    campaignid = getParameter('url_param', 'utm_campaign');
+    siteid = getParameter('url_param', 'utm_source');
+
+    // Ensure minimum requirements are met
+    if (confid && campaignid && siteid) {
+        // Use omit to remove undefined values to match validation object
+        pixelParam = _.omit({
+            'kxconfid': confid,
+            'kxcampaignid': campaignid,
+            'kxsiteid': siteid,
+            'kxadvertiserid': getParameter('undefined', 'undefined'),
+            'kxplacementid': getParameter('undefined', 'undefined'),
+            'kxadid': getParameter('undefined', 'undefined'),
+            'kxcreativeid': getParameter('undefined', 'undefined'),
+            'kxbrand': getParameter('undefined', 'undefined'),
+            'clk': 'https://beacon.krxd.net/click_landing.gif'
+        }, function(value) {
+            return !value
+        });
+
+        // Retrieve capping info
+        store = get('k_utm_store');
+
+        if (configValidate(pixelParam)) {
+            // Update capping info to prevent re-fires
+            store.push(pixelParam);
+            set('k_utm_store', store);
+            sent = Krux('require:http').pixel({
+                url: clickURL,
+                data: pixelParam
+            });
+        }
+    }
+}).call();
+</script></span><span class="kxtag kxinvisible" data-id="39183"><script>
+(function() {
+    var clickURL = Krux('get', 'url_click'),
+        _ = Krux('require:underscore'),
+        libUtil = Krux('require:util.library-tag'),
+        pixelParam, store, sent,
+        confid, campaignid, siteid;
+
+    // Function to retrieve capping info from sessionStorage
+    function get(key) {
+        try {
+            return JSON.parse(sessionStorage.getItem(key) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    // Function to add capping info to sessionStorage
+    function set(key, value) {
+        try {
+            sessionStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {}
+    }
+
+    // Function to check if tag is valid by comparing aginst capping info
+    function configValidate(config) {
+        var allowedSource = libUtil.removeFalsyStrings('google,bing,adthena'.toLowerCase()),
+            i = 0;
+        for (; i < store.length; i++) {
+            if (_.isEqual(store[i], config)) return false;
+        }
+        // Cater for client not using allowedSource
+        if (!allowedSource.length) allowedSource.push(config.kxsiteid.toLowerCase());
+        // Invalid if source is not in the allowed list
+        if (_.indexOf(allowedSource, config.kxsiteid.toLowerCase()) < 0) return false;
+        return true;
+    }
+
+    // Function to collect and normalize values
+    function getParameter(method, path) {
+        var value;
+
+        if (!(method && path)) return;
+
+        switch (method) {
+            case 'none':
+                break;
+            case 'text':
+                value = path;
+                break;
+            case 'get':
+                value = Krux('get', path);
+                break;
+            default:
+                value = Krux('scrape.' + method, path);
+        }
+
+        if (value && !_.isArray(value)) return value
+            .replace(/[^a-zA-Z0-9_-]+/g, '_')
+            .replace(/_+/g, '_')
+            .replace(/^_/, '')
+            .replace(/_$/, '');
+        // Use null if no result as it is included in JSON.stringify
+        return null;
+    }
+
+    // Scrape Media Attributes
+    confid = getParameter('text', 'tqs6wxzm2');
+    campaignid = getParameter('url_param', 'utm_campaign');
+    siteid = getParameter('url_param', 'utm_source');
+
+    // Ensure minimum requirements are met
+    if (confid && campaignid && siteid) {
+        // Use omit to remove undefined values to match validation object
+        pixelParam = _.omit({
+            'kxconfid': confid,
+            'kxcampaignid': campaignid,
+            'kxsiteid': siteid,
+            'kxadvertiserid': getParameter('undefined', 'undefined'),
+            'kxplacementid': getParameter('undefined', 'undefined'),
+            'kxadid': getParameter('undefined', 'undefined'),
+            'kxcreativeid': getParameter('undefined', 'undefined'),
+            'kxbrand': getParameter('undefined', 'undefined'),
+            'clk': 'https://beacon.krxd.net/click_landing.gif'
+        }, function(value) {
+            return !value
+        });
+
+        // Retrieve capping info
+        store = get('k_utm_store');
+
+        if (configValidate(pixelParam)) {
+            // Update capping info to prevent re-fires
+            store.push(pixelParam);
+            set('k_utm_store', store);
+            sent = Krux('require:http').pixel({
+                url: clickURL,
+                data: pixelParam
+            });
+        }
+    }
+}).call();
+</script></span><span class="kxtag kxinvisible" data-id="39405"><script>
+(function() {
+    /* Selective Attribute DataLayer Library Tag */
+    var _, allAttr, allowedList, attr, attributes, dataLayerIngester, dataObj,
+        isAllowed, keepCase, libUtil, omitKeys, pageAttr, prefix, toSet, trim,
+        userAttr, util, value,
+        hasProp = {}.hasOwnProperty;
+    _ = Krux('require:underscore');
+    util = Krux('require:util');
+    libUtil = Krux('require:util.library-tag');
+    dataLayerIngester = Krux('require:scrape').ingestDataLayer;
+
+    /* Safe copy of dataLayer object */
+    dataObj = Krux('scrape.javascript', 'utag_data');
+
+    /* String trimming helper function */
+    trim = function(attr) {
+        return ("" + attr).replace(/^\s+|\s+$/g, '');
+    };
+
+    /* Attribute configs */
+    pageAttr = _.map('currency,landing,licenses,page_name,page_type,product,purchase_price'.split(','), trim);
+    userAttr = _.map('is_admin,is_pro,is_team,viewer_signed_in'.split(','), trim);
+
+    /* Create a array of attributes striping any empty strings */
+    allAttr = _.without(pageAttr.concat(userAttr), '');
+
+    /* Configuration settings */
+    keepCase = 'false' === 'true';
+    omitKeys = 'undefined'.split(',');
+
+    /* Resolve Prefix */
+    prefix = libUtil.resolvePrefix('undefined', 'undefined',
+        'undefined');
+
+    /* Function to varify if attribute should be used */
+    isAllowed = function(value, whitelist) {
+        var i, len, str, x;
+        str = "" + value;
+        if (!((value != null) && str.length > 0)) {
+            return false;
+        }
+        for (i = 0, len = whitelist.length; i < len; i++) {
+            x = whitelist[i];
+            if (value.match(x) != null) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /* Get a full list of attributes usting the dataLayer tool */
+    attributes = dataLayerIngester(dataObj, {
+        omitKeys: libUtil.removeFalsyStrings(omitKeys.concat(libUtil.EXCLUDE_KEYS_CONFIG)),
+        omitValues: libUtil.EXCLUDE_VALUES_CONFIG,
+        caseSensitive: keepCase,
+        useFullPath: 'false' === 'true',
+        useLastValue: 'false' === 'true',
+        customDelimited: [/./],
+        altDelimiter: ',',
+        userKeys: _.map(userAttr, function(exp) {
+            return new RegExp("(^|\\.)" + exp + "$");
+        }),
+        optimizeNames: true
+    });
+
+    /* Only set Attributes in the allowed list */
+    allowedList = _.map(allAttr, function(name) {
+        return new RegExp("(_attr_|_attr_" + prefix + "|\\.)" + (keepCase ?
+            name : libUtil.normalizeAttrName(name, {
+                removeDot: false
+            })) + "$");
+    });
+    toSet = {};
+    for (attr in attributes) {
+        if (!hasProp.call(attributes, attr)) continue;
+        value = attributes[attr];
+        if (isAllowed(attr, allowedList)) {
+            toSet[attr] = value;
+        }
+    }
+    toSet = Krux('prefix:attr', toSet, prefix);
+    Krux('set', toSet);
+}).call();
+</script></span><span class="kxtag kxinvisible" data-id="39437"><script>
+(function() {
+    /* Generic Scrape Tag - Configurable Data Collection */
+    var _, filterValues, libUtil, prefix, scrapeConfig, toSet;
+    _ = Krux('require:underscore');
+    libUtil = Krux('require:util.library-tag');
+    toSet = {};
+    filterValues = function(val) {
+        var i, item, len, ref, str, x;
+        if (_.isArray(val)) {
+            return _.compact((function() {
+                var i, len, results;
+                results = [];
+                for (i = 0, len = val.length; i < len; i++) {
+                    item = val[i];
+                    results.push(filterValues(item));
+                }
+                return results;
+            })());
+        }
+        str = "" + val;
+        if (!((val != null) && str.length > 0)) {
+            return;
+        }
+        ref = libUtil.EXCLUDE_VALUES_CONFIG;
+        for (i = 0, len = ref.length; i < len; i++) {
+            x = ref[i];
+            if (str.match(x) != null) {
+                return;
+            }
+        }
+        return val;
+    };
+    scrapeConfig = function(config, type) {
+        var attr, i, len, parts, ref, results, value;
+        ref = libUtil.removeFalsyStrings(config);
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            attr = ref[i];
+            parts = attr.split('|');
+            if (parts.length === 1 && 'url_param'.match(/(dom|javascript)/)) {
+                continue;
+            }
+            if (parts.length === 1) {
+                parts.unshift(libUtil.normalizeAttrName(parts[0]));
+            }
+            switch ('url_param') {
+                case 'get':
+                    value = filterValues(Krux('get', parts[1]));
+                    break;
+                default:
+                    value = filterValues(Krux('scrape.url_param', parts[1]));
+            }
+            if (value) {
+                results.push(toSet[type + "_attr_" + parts[0]] = value);
+            } else {
+                results.push(void 0);
+            }
+        }
+        return results;
+    };
+    scrapeConfig('_kw|_kw,_camp|_camp,_cl|_cl,_net|_net,_tk|_tk,_trigger|_trigger', 'page');
+    scrapeConfig('', 'user');
+    prefix = libUtil.resolvePrefix('none', 'undefined',
+        'undefined');
+    toSet = Krux('prefix:attr', toSet, prefix);
+    Krux('set', toSet);
+}).call();
+</script></span><span class="kxtag kxinvisible" data-id="40729"><script>
+(function() {
+    /* Generic Scrape Tag - Configurable Data Collection */
+    var _, filterValues, libUtil, prefix, scrapeConfig, toSet;
+    _ = Krux('require:underscore');
+    libUtil = Krux('require:util.library-tag');
+    toSet = {};
+    filterValues = function(val) {
+        var i, item, len, ref, str, x;
+        if (_.isArray(val)) {
+            return _.compact((function() {
+                var i, len, results;
+                results = [];
+                for (i = 0, len = val.length; i < len; i++) {
+                    item = val[i];
+                    results.push(filterValues(item));
+                }
+                return results;
+            })());
+        }
+        str = "" + val;
+        if (!((val != null) && str.length > 0)) {
+            return;
+        }
+        ref = libUtil.EXCLUDE_VALUES_CONFIG;
+        for (i = 0, len = ref.length; i < len; i++) {
+            x = ref[i];
+            if (str.match(x) != null) {
+                return;
+            }
+        }
+        return val;
+    };
+    scrapeConfig = function(config, type) {
+        var attr, i, len, parts, ref, results, value;
+        ref = libUtil.removeFalsyStrings(config);
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            attr = ref[i];
+            parts = attr.split('|');
+            if (parts.length === 1 && 'javascript'.match(/(dom|javascript)/)) {
+                continue;
+            }
+            if (parts.length === 1) {
+                parts.unshift(libUtil.normalizeAttrName(parts[0]));
+            }
+            switch ('javascript') {
+                case 'get':
+                    value = filterValues(Krux('get', parts[1]));
+                    break;
+                default:
+                    value = filterValues(Krux('scrape.javascript', parts[1]));
+            }
+            if (value) {
+                results.push(toSet[type + "_attr_" + parts[0]] = value);
+            } else {
+                results.push(void 0);
+            }
+        }
+        return results;
+    };
+    scrapeConfig('undefined', 'page');
+    scrapeConfig('email_sha256|utag_data.marketing_uid', 'user');
+    prefix = libUtil.resolvePrefix('none', 'undefined',
+        'undefined');
+    toSet = Krux('prefix:attr', toSet, prefix);
+    Krux('set', toSet);
+}).call();
+</script></span></div></body><iframe id="kx-proxy-tpxf4nq03" frameborder="0" width="0" height="0" tabindex="-1" title="empty" aria-hidden="true" src="./proxy.3d2100fd7107262ecb55ce6847f01fa5.html" style="display: none; visibility: hidden; height: 0; width: 0;"></iframe></html>
