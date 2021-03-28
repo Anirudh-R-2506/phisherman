@@ -185,8 +185,8 @@ def main():
 [1] ADOBE       [6] FACEBOOK        [11] INSTAGRAM    [16] PAYPAL        [21] TWITCH       [26] ORIGIN
 [2] AMAZON      [7] GITHUB          [12] LINKEDIN     [17] PINTEREST     [22] TWITTER      [27] CRYPTOCOIN
 [3] APPLE ID    [8] GOOGLE          [13] MESSENGER    [18] PROTONMAIL    [23] WORDPRESS    [28] STACKOVERFLOW
-[4] WIFI        [9] iCLOUD          [14] MICROSOFT    [19] SNAPCHAT      [24] YAHOO        [q/Q] QUIT
-[5] DROPBOX     [10] IGFOLLOWERS    [15] NETFLIX      [20] STEAM         [25] EBAY           
+[4] WIFI        [9] iCLOUD          [14] MICROSOFT    [19] SNAPCHAT      [24] YAHOO        [29] NGROK
+[5] DROPBOX     [10] IGFOLLOWERS    [15] NETFLIX      [20] STEAM         [25] EBAY         [q/Q] QUIT
 
 ''','green',attrs=['bold'])
     print(s1+s2+s3,end='\n\n')
@@ -219,6 +219,7 @@ def main():
         26 : 'origin',
         27 : 'cryptocoin',
         28 : 'stackoverflow',
+        29 : 'ngrok'
     }
     links = {
         'apple' : 'https://www.apple.com/shop/bag',
@@ -244,7 +245,11 @@ def main():
         'twitch' : 'https://www.twitch.tv/',
         'twitter' : 'https://twitter.com/?lang=en',
         'wordpress' : 'https://wordpress.com/me',
-        'ebay' : 'https://www.ebay.com/'
+        'ebay' : 'https://www.ebay.com/',
+        'origin' : 'https://www.origin.com/en-us/store',
+        'cryptocoin' : 'https://www.cryptocoin.pro/',
+        'stackoverflow' : 'https://stackoverflow.com/',
+        'ngrok' : 'https://ngrok.com/'
     }
     while 1:        
         print(colored('[*] Select your choice : ','green',attrs=['bold']),end='')
