@@ -4,7 +4,7 @@ Phishing tool for Google, Facebook, Instagram, Messenger and much more with rece
 
 # LEGAL DISCLAIMER
 
-Usage of Phisherman for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. \
+Usage of Phisherman for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. 
 # ! FOR EDUCATIONAL PURPOSES ONLY !
 
 ![Screenshot](https://raw.githubusercontent.com/Anirudh-R-2506/phisherman/master/demo/demo.png)
