@@ -1,7 +1,7 @@
 <?php
 function get_IP_address()
 {
-    foreach (array('HTTP_CLIENT_IP',
+    /*foreach (array('HTTP_CLIENT_IP',
                    'HTTP_X_FORWARDED_FOR',
                    'HTTP_X_FORWARDED',
                    'HTTP_X_CLUSTER_CLIENT_IP',
@@ -21,7 +21,20 @@ function get_IP_address()
                 }
             }
         }
-    }
+    }*/
+    if (!empty($_SERVER['HTTP_CLIENT_IP']))
+  {
+    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
+  }
+elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+  {
+    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
+  }
+else
+  {
+    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
+  }
+  return $ipaddress;
 }
 fwrite(fopen('ip.txt','w'),get_IP_address());
 ?>

