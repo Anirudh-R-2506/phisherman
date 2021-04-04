@@ -75,7 +75,7 @@ def attack(server,url,wifi):
     try:        
         my_ip = get_my_ip().strip(' ').strip('\n')
         link = get_link()
-    except Exception as e:  
+    except Exception as e:
         print(colored('[*] Error : could not start ngrok ','red',attrs=['bold']))
         return
     print()
@@ -90,7 +90,7 @@ def attack(server,url,wifi):
                     if 'ip.txt' in file:
                         f = open(path.join(root, file))                    
                         r = f.read().strip(' ').strip('\n')
-                        if '.' in r and r not in my_ip:
+                        if '.' in r or ':' in r and r not in my_ip:
                             f.seek(0)
                             print()
                             re=f.read()
