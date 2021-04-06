@@ -13,7 +13,8 @@ Usage of Phisherman for attacking targets without prior mutual consent is illega
 
 git clone https://github.com/Anirudh-R-2506/phisherman \
 cd phisherman \
-python3 main.py
+chmod +x main.py \
+./main.py
 
 
 
