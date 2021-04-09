@@ -85,7 +85,8 @@ def refresh():
                 open(path.join(root, file),'w+')                        
     for root, dirs, files in walk(getcwd()+'/qrcodes/'):
         for file in files:
-            remove('qrcodes/'+file)
+            if file.split('.')[-1].lower() == 'png':
+                remove('qrcodes/'+file)
 
 def attack(server,url,wifi,custom,qr):
         
