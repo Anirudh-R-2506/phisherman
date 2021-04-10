@@ -119,7 +119,7 @@ def attack(server,url,wifi,custom,qr):
                     link = get_link()  
                     qrc = ''
                     shortened = ''
-                    '''if custom:
+                    if custom:
                         shortened = custom_short(link,custom,sess)
                         if '://' not in shortened:
                             shortened += '\n'+shorten(link,sess)
@@ -130,8 +130,7 @@ def attack(server,url,wifi,custom,qr):
                             ur = shortened if '\n' not in shortened else shortened.split('\n')[-1]
                             qrc = '[*] QR Code for '+ur+' saved at '+qrcode(ur,server,sess)
                         else:
-                            qrc = '[*] QR Code for ']=link+' saved at '+qrcode(link,server,sess)
-                    '''
+                            qrc = '[*] QR Code for ']=link+' saved at '+qrcode(link,server,sess)                    
                     break
                 except Exception as e:
                     print(e)
