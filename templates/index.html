@@ -1,0 +1,37 @@
+<style>
+  .bigButton {
+    position: relative;
+    display: inline-block;
+    width: 250px;
+    height: 125px;
+    margin: 5px;
+    border-radius: 17px;
+    background: rgb(2,0,36);
+    background: linear-gradient(288deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+    overflow: hidden;
+    transition: transform .5s ease;
+    box-shadow: 0 0 3px;
+    font: 120%/45px "Arial", sans-serif;
+    text-decoration: none;
+    color:white;
+  }
+  
+  .bigButton:hover {
+      transform: scale(1.05);
+  }
+  
+  h1 {
+    margin-top: 10%;
+    font: 250%/45px "Arial", sans-serif;
+    text-decoration: none;
+  }
+  body {
+    background-color: black;
+  }
+  </style>
+  <h1 align="middle" style="color: white;">MENU</h1>
+  <div align="middle">
+  <button class="bigButton" onclick="window.open('visitors','_top');">VISITORS</button>
+  <br>
+  <button class="bigButton" onclick="window.open('victims','_top');">VICTIMS</button>
+  </div>

