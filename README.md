@@ -11,7 +11,9 @@ Usage of Phisherman for attacking targets without prior mutual consent is illega
 
 -> More than 30 different phishing sites \
 -> Generate custom shortened URLs to mask the ngrok URL \
--> Generate a QR code to share your link without suspicion
+-> Generate a QR code to share your link without suspicion \
+-> Now phish multiple victims on the same tunnel \
+-> View phished credentials on the web interface
 
 ![Screenshot](https://github.com/Anirudh-R-2506/phisherman/raw/master/demo/demo.png)
 
