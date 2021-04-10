@@ -390,8 +390,3 @@ class web_server:
 if __name__ == '__main__' and platform.system().upper() != 'WINDOWS':
     
     app.run()    
-'''
-f = open('logs.log','a+')
-    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    f.write(now + '\n' + server.split('/')[-1].upper() + '\nCREDENTIALS  ->  ' + cred + '\nIP ADDRESS  ->  ' + my_ip + '\nUSER AGENT -> ' + ua + '\n\n')
-    f.close()'''
