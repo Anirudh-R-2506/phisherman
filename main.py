@@ -74,7 +74,7 @@ def ngrok():
         with ZipFile('ngrok-zip.zip', 'r') as zip:
             zip.extractall()
     subprocess.Popen(['chmod','+x', 'ngrok'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
-    tkn = input(colored('[*] Please creat an account on https://ngrok.com and enter your authtoken : ','green',attrs=['bold']))
+    tkn = input(colored('[*] Please create an account on https://ngrok.com and enter your authtoken : ','green',attrs=['bold']))
     subprocess.Popen(['./ngrok','authtoken', tkn],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
     subprocess.Popen(['rm','-rf', 'ngrok-zip.zip'],stdin =subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
     
