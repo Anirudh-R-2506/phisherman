@@ -13,7 +13,7 @@ Usage of Phisherman for attacking targets without prior mutual consent is illega
 -> Generate custom shortened URLs to mask the ngrok URL \
 -> Generate a QR code to share your link without suspicion \
 -> Now phish multiple victims on the same tunnel \
--> View phished credentials on the web interface
+-> View phished credentials on the web by navigating to localhost:5000 or 127.0.0.1:5000
 
 ![Screenshot](https://github.com/Anirudh-R-2506/phisherman/raw/master/demo/demo.png)
 
