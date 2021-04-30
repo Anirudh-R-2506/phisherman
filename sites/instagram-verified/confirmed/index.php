@@ -1,3 +1,8 @@
+<?php
+if (!$_GET || !$_GET['redir'] || !$_GET['id'] || $_GET['a']!='apply'){
+  echo "<script>window.open('/','_top');</script>";
+}
+?>
 <!DOCTYPE html>
 <html lang="en" class="js not-logged-in client-root js-focus-visible sDN5V"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
